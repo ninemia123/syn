@@ -1,0 +1,3582 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΦΡΟΥΡΑ - Σύστημα Διαχείρισης</title>
+    <style>
+        :root {
+            --primary-color: #2c5530;
+            --secondary-color: #4a7c59;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dark-theme {
+            --primary-color: #4a7c59;
+            --secondary-color: #2c5530;
+            --background-color: #1a1a1a;
+            --text-color: #f5f5f5;
+            --card-bg: #2d2d2d;
+            --shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .calculator-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: rgba(44, 85, 48, 0.1);
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .calculator-types {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .calc-type-btn {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .calc-type-btn:hover {
+            background-color: rgba(44, 85, 48, 0.1);
+        }
+
+        .calc-type-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .calculator-form {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .calculator-form.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Στυλ για ΥΠΟΛ ΣΥΝΤΑΞΗΣ */
+        .pensionable-earnings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 14px;
+        }
+
+        .pensionable-earnings-table th,
+        .pensionable-earnings-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .pensionable-earnings-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        .pensionable-earnings-table input {
+            width: 90%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .year-total {
+            background-color: rgba(44, 85, 48, 0.1);
+            font-weight: bold;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .calculation-section {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        .calculation-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .final-result {
+            background-color: rgba(44, 85, 48, 0.2);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* ΗΜΕΡΟΛΟΓΙΟ Styles */
+        .calendar-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(44, 85, 48, 0.1);
+            border-radius: 10px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-day-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            background-color: rgba(44, 85, 48, 0.05);
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            min-height: 100px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .calendar-day:hover {
+            background-color: rgba(44, 85, 48, 0.1);
+            transform: scale(1.02);
+        }
+
+        .calendar-day.empty {
+            background-color: rgba(0,0,0,0.05);
+            cursor: default;
+        }
+
+        .day-number {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .shift-info {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            padding: 4px 8px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .shifts-management {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .shift-form {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .shift-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .shift-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .shift-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .shift-actions button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .earnings-summary {
+            background-color: rgba(44, 85, 48, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 0.5rem;
+        }
+
+        /* Διαχείριση τύπων βαρδιών */
+        .shift-types-management {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        .shift-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .shift-type-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-shadow: var(--shadow);
+        }
+
+        .shift-type-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .shift-type-info {
+            flex: 1;
+        }
+
+        .shift-type-checkbox {
+            margin-left: 1rem;
+        }
+
+        .add-shift-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            align-items: end;
+        }
+
+        /* Στυλ για τις άλλες καρτέλες */
+        .pension-grid, .supplementary-grid, .efapax-grid, .deductions-grid, .salary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .earnings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .dtk-dm-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .supplementary-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .percentage-table, .ranta-table {
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .percentage-table table, .ranta-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .percentage-table th, .percentage-table td,
+        .ranta-table th, .ranta-table td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .percentage-table th, .ranta-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .year-section {
+            margin-bottom: 2rem;
+        }
+
+        .year-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .year-content {
+            padding: 1rem;
+            border: 2px solid var(--primary-color);
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .average-section {
+            background-color: rgba(44, 85, 48, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .deductions-table, .tax-table, .children-tax-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .deductions-table th, .deductions-table td,
+        .tax-table th, .tax-table td,
+        .children-tax-table th, .children-tax-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .deductions-table th, .tax-table th, .children-tax-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .deductions-table tr:nth-child(even) {
+            background-color: rgba(44, 85, 48, 0.05);
+        }
+
+        .example-section {
+            background-color: rgba(44, 85, 48, 0.1);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+        }
+
+        .extra-info {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+
+        .warning-note {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .instruction {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .salary-scale {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1.5rem;
+            border-radius: 5px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .scale-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .scale-item:hover {
+            background-color: rgba(44, 85, 48, 0.1);
+        }
+
+        .scale-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .scale-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .scale-amount {
+            font-weight: bold;
+        }
+
+        .salary-calculations {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1.5rem;
+            border-radius: 5px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .salary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .salary-table th, .salary-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .salary-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        .salary-table td {
+            background-color: var(--card-bg);
+        }
+
+        .salary-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .current-scale {
+            background-color: rgba(44, 85, 48, 0.2);
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 1rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Weekly Time Styles */
+        .weekly-time-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .weekly-time-table th, .weekly-time-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .weekly-time-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            font-weight: bold;
+        }
+        
+        .important {
+            background-color: #ffebcd;
+            font-weight: bold;
+        }
+        
+        .calculation {
+            background-color: #e6f7ff;
+            font-weight: bold;
+        }
+        
+        .result {
+            background-color: #f0fff0;
+            font-weight: bold;
+        }
+        
+        .header-row {
+            background-color: #e8e8e8;
+            font-weight: bold;
+        }
+        
+        .weekly-section-title {
+            background-color: #d4edda;
+            padding: 10px;
+            margin: 20px 0 10px 0;
+            border-left: 5px solid #28a745;
+            font-weight: bold;
+        }
+        
+        .formula {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        /* Στυλ για διαχείριση δεδομένων */
+        .data-management {
+            background-color: rgba(44, 85, 48, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        .data-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .export-btn {
+            background-color: #28a745;
+        }
+
+        .import-btn {
+            background-color: #17a2b8;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .import-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(44, 85, 48, 0.05);
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .data-info {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Στυλ για ΔΑΝΕΙΟ */
+        .loan-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .loan-inputs {
+            background-color: rgba(44, 85, 48, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .loan-results {
+            background-color: rgba(44, 85, 48, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .amortization-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .amortization-table th,
+        .amortization-table td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .amortization-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Στυλ για Διαχείριση ΔΤΚ */
+        .dtk-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .decade-section {
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .data-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .shifts-management, .pension-grid, .supplementary-grid, 
+            .efapax-grid, .deductions-grid, .salary-grid, .loan-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 0.8rem;
+            }
+            
+            .calendar-day {
+                min-height: 80px;
+                padding: 0.5rem;
+            }
+            
+            .add-shift-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .shift-types-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .earnings-row, .dtk-dm-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .weekly-time-table, .salary-table {
+                font-size: 12px;
+            }
+            
+            .weekly-time-table th, .weekly-time-table td,
+            .salary-table th, .salary-table td {
+                padding: 4px;
+            }
+            
+            .pensionable-earnings-table {
+                font-size: 12px;
+            }
+            
+            .pensionable-earnings-table th,
+            .pensionable-earnings-table td {
+                padding: 4px;
+            }
+            
+            .calculation-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .dtk-management-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #ddd;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ΦΡΟΥΡΑ - Σύστημα Διαχείρισης</h1>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+    </header>
+
+    <div class="container">
+        <section class="calculator-section">
+            <h2>Επιλέξτε Τύπο Υπολογισμού</h2>
+            
+            <div class="calculator-types">
+                <button class="calc-type-btn active" data-calc="calendar">📅 ΗΜΕΡΟΛΟΓΙΟ</button>
+                <button class="calc-type-btn" data-calc="pensionable-earnings">📊 ΥΠΟΛ ΣΥΝΤΑΞΗΣ</button>
+                <button class="calc-type-btn" data-calc="pension">💰 ΚΥΡΙΑ ΣΥΝΤΑΞΗ</button>
+                <button class="calc-type-btn" data-calc="supplementary">🏦 ΕΠΙΚΟΥΡΙΚΗ</button>
+                <button class="calc-type-btn" data-calc="mtpy">📊 ΜΤΠΥ</button>
+                <button class="calc-type-btn" data-calc="efapax">💼 ΕΦΑΠΑΞ</button>
+                <button class="calc-type-btn" data-calc="deductions">📋 ΚΡΑΤΗΣΕΙΣ</button>
+                <button class="calc-type-btn" data-calc="salary">💵 ΜΙΣΘΟΛΟΓΙΟ</button>
+                <button class="calc-type-btn" data-calc="weekly-time">⏰ ΕΒΔΟΜΑΔΙΑΙΟΣ</button>
+                <button class="calc-type-btn" data-calc="loan">🏠 ΔΑΝΕΙΟ</button>
+                <button class="calc-type-btn" data-calc="data-management">💾 ΔΕΔΟΜΕΝΑ</button>
+            </div>
+
+            <!-- ΗΜΕΡΟΛΟΓΙΟ -->
+            <div id="calendar-calc" class="calculator-form active">
+                <div class="calendar-section">
+                    <h3>📅 Ημερολόγιο Βαρδιών</h3>
+                    
+                    <div class="calendar-header">
+                        <h4 id="current-month">Μήνας, Έτος</h4>
+                        <div class="calendar-nav">
+                            <button id="prev-month">← Προηγούμενος</button>
+                            <button id="next-month">Επόμενος →</button>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendar">
+                        <!-- Ημερολόγιο θα γεμίσει με JavaScript -->
+                    </div>
+                    
+                    <div class="shifts-management">
+                        <div class="shift-form">
+                            <h4>➕ Προσθήκη/Επεξεργασία Βάρδιας</h4>
+                            <div class="form-group">
+                                <label for="shift-date">Ημερομηνία:</label>
+                                <input type="date" id="shift-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="shift-type">Τύπος Βάρδιας:</label>
+                                <select id="shift-type">
+                                    <!-- Θα γεμίσει με JavaScript -->
+                                </select>
+                            </div>
+                            <div class="form-group" id="custom-hours" style="display: none;">
+                                <label for="shift-hours">Ώρες:</label>
+                                <input type="number" id="shift-hours" placeholder="Αριθμός ωρών" min="1" max="24">
+                            </div>
+                            <div class="form-group">
+                                <label for="shift-rate">Αντιτιμο ανά ώρα (€):</label>
+                                <input type="number" id="shift-rate" placeholder="Αφήστε κενό για 0" step="0.01" min="0">
+                            </div>
+                            <button id="save-shift">💾 Αποθήκευση Βάρδιας</button>
+                            <button id="delete-shift" style="background-color: #dc3545; display: none;">🗑️ Διαγραφή Βάρδιας</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shift-types-management">
+                        <h4>🎨 Διαχείριση Τύπων Βαρδιών</h4>
+                        <p>Προσθέστε νέους τύπους βαρδιών και επιλέξτε ποιες βάρδιες θέλετε να εμφανίζουν το αντίτιμο</p>
+                        
+                        <div class="add-shift-form">
+                            <div class="form-group">
+                                <label for="new-shift-name">Όνομα Βάρδιας:</label>
+                                <input type="text" id="new-shift-name" placeholder="Π.χ. Επιπλέον Βάρδια">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-shift-color">Χρώμα:</label>
+                                <input type="color" id="new-shift-color" value="#4CAF50">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-shift-hours">Προεπιλεγμένες Ώρες:</label>
+                                <input type="number" id="new-shift-hours" value="8" min="1" max="24">
+                            </div>
+                            <button id="add-shift-type">➕ Προσθήκη Τύπου</button>
+                        </div>
+                        
+                        <div class="shift-types-grid" id="shift-types-container">
+                            <!-- Τύποι βαρδιών θα γεμισουν με JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="earnings-summary">
+                        <h4>💰 Υπολογισμός Αποδοχών</h4>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div>⏱️ Συνολικές Ώρες</div>
+                                <div class="summary-value" id="total-hours">0</div>
+                            </div>
+                            <div class="summary-item">
+                                <div>💶 Ακαθάριστες Αποδοχές</div>
+                                <div class="summary-value" id="gross-earnings">0€</div>
+                            </div>
+                            <div class="summary-item">
+                                <div>📊 2% ΜΤΠΥ</div>
+                                <div class="summary-value" id="mtpy-deduction">0€</div>
+                            </div>
+                            <div class="summary-item">
+                                <div>🏦 2% ΕΙΣΦΟΡΑ</div>
+                                <div class="summary-value" id="eisfora-deduction">0€</div>
+                            </div>
+                            <div class="summary-item">
+                                <div>💼 20% ΦΟΡΟΣ</div>
+                                <div class="summary-value" id="tax-deduction">0€</div>
+                            </div>
+                            <div class="summary-item">
+                                <div>💳 Καθαρές Αποδοχές</div>
+                                <div class="summary-value" id="net-earnings">0€</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ΥΠΟΛΟΓΙΣΜΟΣ ΣΥΝΤΑΞΙΜΩΝ ΑΠΟΔΟΧΩΝ -->
+            <div id="pensionable-earnings-calc" class="calculator-form">
+                <h3>📊 ΥΠΟΛΟΓΙΣΜΟΣ ΣΥΝΤΑΞΙΜΩΝ ΑΠΟΔΟΧΩΝ</h3>
+                
+                <div class="instruction">
+                    <strong>Οι συντάξιμες αποδοχές για μισθωτούς υπολογίζονται ως ο μέσος μηνιαίος μεικτός μισθός του ασφαλισμένου από 1/1/2002 και έως την υποβολή της αίτησης συνταξιοδότησης.</strong>
+                </div>
+
+                <div class="note">
+                    <strong>ΟΔΗΓΙΕΣ:</strong> Στην πρώτη στήλη εισάγετε το ποσό των συνταξίμων αποδοχών για κάθε έτος. Το ποσό θα πολλαπλασιαστεί αυτόματα με τον ΔΤΚ και το αποτέλεσμα θα εμφανιστεί στη δεύτερη στήλη.
+                </div>
+
+                <h4 class="section-title">Πίνακας Υπολογισμού Συνταξίμων Αποδοχών</h4>
+                
+                <table class="pensionable-earnings-table">
+                    <thead>
+                        <tr>
+                            <th>Έτος</th>
+                            <th>Συντάξιμες Αποδοχές (€)</th>
+                            <th>Δείκτης Τιμών Καταναλωτή</th>
+                            <th>Αναπροσαρμοσμένες Αποδοχές (€)</th>
+                            <th>ΔΜ (%)</th>
+                            <th>Μηνιαίος Μισθός μετά ΔΜ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pensionable-earnings-body">
+                        <!-- Πίνακας θα γεμίσει με JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="year-total">
+                            <td><strong>ΣΥΝΟΛΟ</strong></td>
+                            <td id="total-earnings">0.00</td>
+                            <td>-</td>
+                            <td id="total-adjusted">0.00</td>
+                            <td>-</td>
+                            <td id="total-dm">0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- ΝΕΟ: Διαχείριση ΔΤΚ -->
+                <div class="shift-types-management" style="margin-top: 2rem;">
+                    <h4>⚙️ Διαχείριση ΔΤΚ (Δείκτης Τιμών Καταναλωτή)</h4>
+                    <p>Εδώ μπορείτε να τροποποιήσετε τις τιμές του ΔΤΚ για κάθε έτος</p>
+                    
+                    <div class="dtk-management-grid" id="dtk-management-container">
+                        <!-- Τιμές ΔΤΚ θα γεμίσουν με JavaScript -->
+                    </div>
+                    
+                    <button onclick="resetDtkValues()" style="background-color: #ffc107; color: black; margin-top: 1rem;">
+                        🔄 Επαναφορά ΔΤΚ σε Προεπιλεγμένες Τιμές
+                    </button>
+                </div>
+
+                <div class="calculation-section">
+                    <h4 class="section-title">Υπολογισμός Συνταξίμου Μισθού</h4>
+                    
+                    <div class="calculation-row">
+                        <div class="form-group">
+                            <label for="selected-year">Επιλέξτε Έτος:</label>
+                            <select id="selected-year">
+                                <!-- Θα γεμίσει με JavaScript -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dm-percentage">ΔΜ (%):</label>
+                            <input type="number" id="dm-percentage" step="0.1" value="5">
+                        </div>
+                    </div>
+                    
+                    <button onclick="calculatePensionableSalary()">🧮 Υπολογισμός Συνταξίμου Μισθού</button>
+                    
+                    <div id="pensionable-salary-result" class="final-result">
+                        <h4>Αποτελέσματα Υπολογισμού</h4>
+                        <p>Συνολικές Αναπροσαρμοσμένες Αποδοχές: <strong id="result-total-adjusted">0.00€</strong></p>
+                        <p>Μέσος Μηνιαίος Μισθός: <strong id="result-monthly-salary">0.00€</strong></p>
+                        <p>Συνταξιμος Μισθός μετά ΔΜ: <strong id="result-pensionable-salary">0.00€</strong></p>
+                    </div>
+                </div>
+
+                <div class="calculation-section">
+                    <h4 class="section-title">Υπολογισμός Σύνταξης</h4>
+                    
+                    <div class="form-group">
+                        <label for="total-years-pension">Συνολικά Έτη Ασφάλισης:</label>
+                        <input type="number" id="total-years-pension" min="15" max="50" value="35" oninput="updatePensionPercentage()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="national-pension">Εθνική Σύνταξη (€):</label>
+                        <input type="number" id="national-pension" value="436">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pension-percentage">Ποσοστό Αναπλήρωσης:</label>
+                        <input type="number" id="pension-percentage" readonly>
+                    </div>
+                    
+                    <button onclick="calculateFinalPension()">🧮 Υπολογισμός Σύνταξης</button>
+                    
+                    <div id="final-pension-result" class="final-result">
+                        <h4>Τελική Σύνταξη</h4>
+                        <p>Ποσοστό Αναπλήρωσης: <strong id="result-percentage">0%</strong></p>
+                        <p>Κύρια Σύνταξη: <strong id="result-main-pension">0.00€</strong></p>
+                        <p>Σύνολο προς κράτησης: <strong id="result-total-before">0.00€</strong></p>
+                        <p>Κράτηση Υγείας (6%): <strong id="result-health-deduction">0.00€</strong></p>
+                        <p style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">
+                            Τελική Μηνιαία Σύνταξη: <strong id="result-final-pension">0.00€</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ΚΥΡΙΑ ΣΥΝΤΑΞΗ -->
+            <div id="pension-calc" class="calculator-form">
+                <h3>💰 Κύρια Σύνταξη</h3>
+                
+                <div class="note" style="margin-bottom: 1.5rem;">
+                    <strong>ΣΗΜΑΝΤΙΚΗ ΣΗΜΕΙΩΣΗ:</strong> ο ΔΤΚ μπαινει ΣΤΟ ΕΚΑΣΤΟΤΕ ΕΤΟΣ κι τελος. Όταν πάρουμε τις συνταξίμες αποδοχές κατ' έτος θα διορθωθεί. Τώρα έτσι είναι μια κοντινή προσεγγιση.
+                </div>
+                
+                <div class="pension-grid">
+                    <div>
+                        <div class="earnings-row">
+                            <div class="form-group">
+                                <label for="totalPensionableEarnings">ΣΥΝΟΛΟ ΣΥΝΤΑΞΙΜΩΝ ΑΠΟΔΟΧΩΝ ΑΠΟ 2002 (€):</label>
+                                <input type="number" id="totalPensionableEarnings" placeholder="Π.χ. 360000">
+                            </div>
+                            <div class="form-group">
+                                <label for="dmPercentage">ΔΜ (%):</label>
+                                <input type="number" id="dmPercentage" placeholder="Π.χ. 3" step="0.1">
+                                <small>Ποσοστό που προστίθεται στις συνταξίμες αποδοχές</small>
+                            </div>
+                        </div>
+                        
+                        <div class="dtk-dm-row">
+                            <div class="form-group">
+                                <label for="dtkMultiplier">ΔΤΚ:</label>
+                                <input type="number" id="dtkMultiplier" value="1.04" step="0.01">
+                                <small>Πολλαπλασιαστής Συνταξίμων Αποδοχών</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="yearsAfter2002">Έτη μετά το 2002:</label>
+                            <input type="number" id="yearsAfter2002" placeholder="Π.χ. 20" min="0" max="23">
+                            <small>Μέγιστο: 23 έτη (από 2002 έως 2025)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="totalYears">Σύνολο Ετών Ασφάλισης:</label>
+                            <input type="number" id="totalYears" placeholder="Π.χ. 35" min="15" oninput="updatePercentage()">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nationalPension">Εθνική Σύνταξη (€):</label>
+                                <input type="number" id="nationalPension" value="436">
+                        </div>
+                        
+                        <button onclick="calculatePension()">Υπολογισμός Σύνταξης</button>
+                    </div>
+                    
+                    <div>
+                        <h4>Πίνακας Ποσοστών Αναπλήρωσης</h4>
+                        <div class="percentage-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Έτη</th>
+                                        <th>Ποσοστό</th>
+                                        <th>Έτη</th>
+                                        <th>Ποσοστό</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="percentageTableBody">
+                                    <!-- Table will be filled by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="result">
+                            <p>Ποσοστό Αναπλήρωσης: <strong id="percentageResult">0%</strong></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="pension-result" class="final-result"></div>
+            </div>
+
+            <!-- ΕΠΙΚΟΥΡΙΚΗ ΣΥΝΤΑΞΗ -->
+            <div id="supplementary-calc" class="calculator-form">
+                <h3>🏦 Επικουρική Σύνταξη</h3>
+                
+                <div class="supplementary-grid">
+                    <div>
+                        <h4>Επικουρική Μέχρι 2014</h4>
+                        <div class="form-group">
+                            <label for="supplementaryEarnings">Συντάξιμες Αποδοχές (€):</label>
+                            <input type="number" id="supplementaryEarnings" placeholder="Π.χ. 300000">
+                        </div>
+                        <div class="form-group">
+                            <label for="supplementaryYears">Έτη Ασφάλισης:</label>
+                            <input type="number" id="supplementaryYears" placeholder="Π.χ. 25" min="1">
+                        </div>
+                        <button onclick="calculateSupplementary2014()">Υπολογισμός</button>
+                        <div id="supplementary2014-result" class="result"></div>
+                    </div>
+                    
+                    <div>
+                        <h4>Επικουρική Μετά το 2014</h4>
+                        <div class="form-group">
+                            <label for="totalContributions">Συνολικές Εισφορές (€):</label>
+                            <input type="number" id="totalContributions" placeholder="Π.χ. 50000">
+                        </div>
+                        <div class="form-group">
+                            <label for="currentAge">Ηλικία Συνταξιοδότησης:</label>
+                            <input type="number" id="currentAge" placeholder="Π.χ. 67" min="40" max="72" oninput="updateRanta()">
+                        </div>
+                        <div class="form-group">
+                            <label for="rantaValue">Ranta:</label>
+                            <input type="number" id="rantaValue" step="0.001" readonly>
+                        </div>
+                        <button onclick="calculateSupplementary2015()">Υπολογισμός</button>
+                        <div id="supplementary2015-result" class="result"></div>
+                    </div>
+                </div>
+                
+                <div class="supplementary-section">
+                    <h4>Πίνακας Ranta</h4>
+                    <div class="ranta-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ηλικία</th>
+                                    <th>Ranta</th>
+                                    <th>Ηλικία</th>
+                                    <th>Ranta</th>
+                                    <th>Ηλικία</th>
+                                    <th>Ranta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rantaTableBody">
+                                <!-- Table will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="total-supplementary-result" class="final-result"></div>
+            </div>
+
+            <!-- ΜΤΠΥ -->
+            <div id="mtpy-calc" class="calculator-form">
+                <h3>📊 ΜΤΠΥ - Μετοχικό Ταμείο Παραγωγικού Υπαλληλικού</h3>
+                
+                <div class="form-group">
+                    <label for="mtpyEarnings">Συντάξιμες Αποδοχές (€):</label>
+                    <input type="number" id="mtpyEarnings" placeholder="Π.χ. 300000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="mtpyYears">Έτη με Εισφορές:</label>
+                    <input type="number" id="mtpyYears" placeholder="Π.χ. 25" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="mtpyFactor">Συντελεστής Μετοχικού (%):</label>
+                    <input type="number" id="mtpyFactor" value="0.215" step="0.01">
+                    <small>Συνήθης τιμή: 0.215%</small>
+                </div>
+                
+                <button onclick="calculateMTPY()">Υπολογισμός Μερισμάτων</button>
+                
+                <div id="mtpy-result" class="final-result"></div>
+                
+                <div class="note">
+                    <strong>ΣΗΜΕΙΩΣΗ:</strong> Τα μερίσματα ΜΤΠΥ καταβάλλονται καθε ΤΡΕΙΣ ΜΗΝΕΣ.
+                </div>
+            </div>
+
+            <!-- ΕΦΑΠΑΞ -->
+            <div id="efapax-calc" class="calculator-form">
+                <h3>💼 ΕΦΑПAΞ - Επιδότηση Αποζημίωσης Παραιτήσεων Αποχωρούντων Ξένων</h3>
+                
+                <div class="efapax-grid">
+                    <div>
+                        <h4>Αποδοχές ανά Έτος</h4>
+                        
+                        <div class="year-section">
+                            <div class="year-title">2009</div>
+                            <div class="year-content">
+                                <input type="number" id="earnings2009" placeholder="Αποδοχές 2009" class="form-group">
+                            </div>
+                        </div>
+                        
+                        <div class="year-section">
+                            <div class="year-title">2010</div>
+                            <div class="year-content">
+                                <input type="number" id="earnings2010" placeholder="Αποδοχές 2010" class="form-group">
+                            </div>
+                        </div>
+                        
+                        <div class="year-section">
+                            <div class="year-title">2011</div>
+                            <div class="year-content">
+                                <input type="number" id="earnings2011" placeholder="Αποδοχές 2011" class="form-group">
+                            </div>
+                        </div>
+                        
+                        <div class="year-section">
+                            <div class="year-title">2012</div>
+                            <div class="year-content">
+                                <input type="number" id="earnings2012" placeholder="Αποδοχές 2012" class="form-group">
+                            </div>
+                        </div>
+                        
+                        <div class="year-section">
+                            <div class="year-title">2013</div>
+                            <div class="year-content">
+                                <input type="number" id="earnings2013" placeholder="Αποδοχές 2013" class="form-group">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4>Υπολογισμός ΕΦΑПAΞ</h4>
+                        
+                        <div class="form-group">
+                            <label for="totalContributions2014">Συνολικές Εισφορές έως 2014 (€):</label>
+                            <input type="number" id="totalContributions2014" placeholder="Π.χ. 15000">
+                        </div>
+                        
+                        <div class="average-section">
+                            <p>Μέσος Όρος Αποδοχών: <strong id="averageResult">0.00€</strong></p>
+                            <p>60% Μέσου Όρου: <strong id="sixtyPercentResult">0.00€</strong></p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="averageEarnings">Μέσος Όρος (αυτόματος):</label>
+                            <input type="number" id="averageEarnings" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sixtyPercent">60% Μέσου Όρου (αυτόματος):</label>
+                            <input type="number" id="sixtyPercent" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="finalEfapax">Τελικό ΕΦΑПAΞ (αυτόματος):</label>
+                            <input type="number" id="finalEfapax" readonly>
+                        </div>
+                        
+                        <button onclick="calculateEfapax()">Υπολογισμός</button>
+                        
+                        <div class="result">
+                            <p>Συνολικές Εισφορές: <strong id="contributionsResult">0.00€</strong></p>
+                            <p style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">
+                                Τελικό ΕΦΑПAΞ: <strong id="finalEfapaxResult">0.00€</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ΚΡΑΤΗΣΕΙΣ -->
+            <div id="deductions-calc" class="calculator-form">
+                <h3>📋 ΚΡΑΤΗΣΕΙΣ - Πληροφορίες</h3>
+                
+                <div class="deductions-grid">
+                    <div>
+                        <h4 class="section-title">Κρατήσεις & Σημασία</h4>
+                        
+                        <table class="deductions-table">
+                            <thead>
+                                <tr>
+                                    <th>ΚΡΑΤΗΣΕΙΣ</th>
+                                    <th>ΤΙ ΣΗΜΑΙΝΕΙ</th>
+                                    <th>ΤΙ ΔΙΝΟΥΜΕ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>ΤΠΔΥ</strong></td>
+                                    <td>ΕΦΑΠΑΞ</td>
+                                    <td>4%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΜΤΠΥ</strong></td>
+                                    <td>ΜΕΤΟΧΙΚΟ ΜΕΡΙΣΜΑ</td>
+                                    <td>4.5%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΤΕΑΔΥ</strong></td>
+                                    <td>ΕΠΙΚΟΥΡΙΚΗ</td>
+                                    <td>3%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΥΓΕΙΟΝ ΑΣΦ</strong></td>
+                                    <td>ΥΓΕΙΟΝΟΜΙΚΗ ΠΕΡΙΘΑΛΨΗ</td>
+                                    <td>2.05%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΕΦΚΑ ΣΥΝΤΑΞΗ</strong></td>
+                                    <td>ΥΠΕΡ ΣΥΝΤΑΞΗΣ</td>
+                                    <td>6.67%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΜΤΠΥ ΝΕΟΔ/ΣΤΟΥ</strong></td>
+                                    <td>ΕΓΡΑΦΗ ΣΤΟ ΜΤΠΥ</td>
+                                    <td>1 ΑΚΑΘΑΡΙΣΤΟΣ ΜΙΣΘΟΣ ΔΙΑ 12</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΕΙΣΦΟΡΑ ΥΠΕΡ ΑΝΕΡΓΙΑΣ</strong></td>
+                                    <td></td>
+                                    <td>2% (ΜΝΗΜΟΝΙΑΚΟΣ ΝΟΜΟΣ)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΜΤΠΥ ΝΥΧΤΕΡΙΝΑ, ΠΡ. ΔΙΑΦΟΡΑ ΚΤΛ</strong></td>
+                                    <td></td>
+                                    <td>2% (ΜΗ ΑΝΤΑΠΟΔΟΤΙΚΟ)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΦΜΥ</strong></td>
+                                    <td>ΦΟΡΟΣ ΜΙΣΘΩΤΩΝ ΥΠΗΡΕΣΙΩΝ</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΦΟΡΟΣ</strong></td>
+                                    <td>ΣΕ ΕΚΤΑΚΕΣ ΑΠΟΔΟΧΕΣ ΠΧ ΝΥΧΤΕΡΙΝΑ</td>
+                                    <td>20%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Νέα ενότητα για έκτακτα -->
+                        <div class="extra-info" style="margin-top: 2rem;">
+                            <h4>ΕΙΣΦΟΡΕΣ ΣΤΑ ΕΚΤΑΚΤΑ (π.χ. ΝΥΧΤΕΡΙΝΑ)</h4>
+                            <p><strong>2%</strong></p>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                (ΝΥΧΤΕΡΙΝΑ, ΑΡΓΙΕΣ ΚΤΛ ΕΧΟΥΝ 20% ΦΟΡΟ, 2% ΜΤΠΥ ΚΑΙ 2% ΕΙΣΦΡΑ - ΣΥΝΟΛΟ 24%)
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="section-title">Φόροι & Παράδειγμα</h4>
+                        
+                        <div class="form-group">
+                            <label for="basicSalary">Βασικός Μισθός (€):</label>
+                            <input type="number" id="basicSalary" value="958">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dangerousBonus">Επικίνδυνο (€):</label>
+                            <input type="number" id="dangerousBonus" value="150">
+                        </div>
+                        
+                        <button onclick="calculateDeductions()">Υπολογισμός Κρατήσεων</button>
+                        
+                        <div class="example-section">
+                            <h4>Παράδειγμα Υπολογισμού</h4>
+                            <table class="deductions-table">
+                                <tr>
+                                    <td><strong>ΒΑΣΙΚΟΣ ΜΚ</strong></td>
+                                    <td>958€</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΕΠΙΚΙΝΔΥΝΟ</strong></td>
+                                    <td>150€</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΣΥΝΟΛΟ</strong></td>
+                                    <td><strong>1108€</strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><strong>ΚΡΑΤΗΣΕΙΣ</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>ΤΠΔΥ (4% × 1108)</td>
+                                    <td>44.32€</td>
+                                </tr>
+                                <tr>
+                                    <td>ΜΤΠΥ (4.5% × 1108)</td>
+                                    <td>49.86€</td>
+                                </tr>
+                                <tr>
+                                    <td>ΤΕΑΔΥ (3% × 1108)</td>
+                                    <td>33.24€</td>
+                                </tr>
+                                <tr>
+                                    <td>ΥΓΝΜΚΗ (2.05% × 1108)</td>
+                                    <td>22.71€</td>
+                                </tr>
+                                <tr>
+                                    <td>ΕΙΣΦ ΓΙΑ ΑΝΕΡΓΕΙΑ (2% × 1108)</td>
+                                    <td>22.16€</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΣΥΝΟΛΟ ΚΡΑΤΗΣΕΩΝ</strong></td>
+                                    <td><strong>172.29€</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΠΡΟ ΦΟΡΟΥ</strong></td>
+                                    <td><strong>935.71€</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4 style="margin-top: 2rem;">Φόρος Κλίμακας 2026</h4>
+                        <table class="tax-table">
+                            <thead>
+                                <tr>
+                                    <th>Εισόδημα</th>
+                                    <th>Φορολογικός Συντελεστής</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Έως 10,000€</td>
+                                    <td>9% (90€ φόρος)</td>
+                                </tr>
+                                <tr>
+                                    <td>Από 10,001€ έως 20,000€</td>
+                                    <td>20%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4 style="margin-top: 1.5rem;">Φόρος ανά Αριθμό Τέκνων</h4>
+                        <table class="children-tax-table">
+                            <thead>
+                                <tr>
+                                    <th>Αριθμός Τέκνων</th>
+                                    <th>Φορολογικός Συντελεστής</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>0 ΤΕΚΝΑ</td>
+                                    <td>20%</td>
+                                </tr>
+                                <tr>
+                                    <td>1 ΤΕΚΝΟ</td>
+                                    <td>18%</td>
+                                </tr>
+                                <tr>
+                                    <td>2 ΤΕΚΝΑ</td>
+                                    <td>16%</td>
+                                </tr>
+                                <tr>
+                                    <td>3 ΤΕΚΝΑ</td>
+                                    <td>9%</td>
+                                </tr>
+                                <tr>
+                                    <td>4 ΤΕΚΝΑ</td>
+                                    <td>0%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="result" style="margin-top: 1rem;">
+                            <p><strong>ΦΜΥ Υπολογίζεται με 2 τρόπους:</strong></p>
+                            <p>Α) 80% του φόρου προηγούμενου έτους ÷ 12</p>
+                            <p>Β) Σταθερές αποδοχές → ετήσιος φόρος ÷ 12</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ΜΙΣΘΟΛΟΓΙΟ -->
+            <div id="salary-calc" class="calculator-form">
+                <h3>💵 ΜΙΣΘΟΛΟΓΙΟ - Υπολογισμός Ωρομισθίων</h3>
+                
+                <div class="warning-note">
+                    <strong>ΣΗΜΕΙΩΣΗ:</strong> Υπάρχει απόκλιση σε 5-6 κωδικούς επι συνολου κλιμακιου της ταξης 0,01 ευρώ. Θα διορθωθεί.
+                </div>
+                
+                <div class="instruction">
+                    <strong>ΠΑΤΗΣΤΕ ΣΤΟΝ ΑΡΙΘΜΟ ΝΑ ΕΜΦΑΝΙΣΤΕΙ ΤΟ ΚΛΙΜΑΚΙΟ</strong>
+                </div>
+                
+                <div class="salary-grid">
+                    <!-- Αριστερή πλευρά - Κλιμάκια -->
+                    <div class="salary-scale">
+                        <h4>ΒΑΣΙΚΟΣ ΚΛΙΜΑΚΙΟΥ (ΒΜ)</h4>
+                        
+                        <div class="salary-input-group">
+                            <label for="baseSalary">Βασικός Μισθός (€):</label>
+                            <input type="number" id="baseSalary" value="958" step="1" onchange="updateSalaryScale()">
+                        </div>
+                        
+                        <div class="current-scale">
+                            <h4>Επιλεγμένο Κλιμάκιο: <span id="selectedScale">1</span></h4>
+                            <p>Ποσό: <strong id="selectedAmount">958.00€</strong></p>
+                        </div>
+                        
+                        <div id="salaryScaleList">
+                            <!-- Κλιμάκια θα προστεθούν με JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Δεξιά πλευρά - Υπολογισμοί -->
+                    <div class="salary-calculations">
+                        <h4>ΥΠΟΛΟΓΙΣΜΟΣ ΩΡΟΜΙΣΘΙΩΝ</h4>
+                        
+                        <table class="salary-table">
+                            <thead>
+                                <tr>
+                                    <th>ΕΙΔΟΣ</th>
+                                    <th>ΤΥΠΟΣ ΥΠΟΛΟΓΙΣΜΟΥ</th>
+                                    <th>ΩΡΟΜΙΣΘΙΟ (€)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>ΩΡΟΜΙΣΘΙΟ</strong></td>
+                                    <td>1/280 του κλιμακίου</td>
+                                    <td id="hourlyRate">3.42</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΥΠΕΡΩΡΙΑΚΗ ΜΕΧΡΙ 22:00</strong></td>
+                                    <td>Ωρομίσθιο</td>
+                                    <td id="overtimeUntil22">3.42</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΑΠΌ 22:00 ΜΕΧΡΙ 6:00</strong></td>
+                                    <td>Ωρομίσθιο + 30%</td>
+                                    <td id="overtime22to6">4.45</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΠΕΡΑΝ ΚΥΡΙΑΚΗ ΚΑΙ ΕΞΑΙΡΕΣΙΜΕΣ 6:00-22:00</strong></td>
+                                    <td>Ωρομίσθιο + 40%</td>
+                                    <td id="sunday6to22">4.79</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΠΕΡΑΝ ΚΥΡΙΑΚΗ ΑΠΟ 22:00 ΕΩΣ 6:00</strong></td>
+                                    <td>Ωρομίσθιο + 45%</td>
+                                    <td id="sunday22to6">4.96</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΝΥΧΤΕΡΙΝΗ ΕΡΓΑΣΙΑ 22:00-6:00</strong></td>
+                                    <td>60% του Ωρομισθίου</td>
+                                    <td id="nightWork">2.05</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΚΥΡΙΑΚΕΣ ΚΑΙ ΕΞΑΙΡΕΣΙΜΕΣ</strong></td>
+                                    <td>75% του Ωρομισθίου</td>
+                                    <td id="sundayHoliday">2.57</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ΠΕΡΑΝ ΠΕΝΘΗΜΕΡΟΥ (ΣΑΒΒΑΤΑ)</strong></td>
+                                    <td>Ωρομίσθιο + 25%</td>
+                                    <td id="saturday">4.28</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="result" style="margin-top: 1.5rem;">
+                            <h4>ΣΥΝΤΟΜΟΙ ΤΥΠΟΙ</h4>
+                            <p><strong>ΩΡΟΜΙΣΘΙΟ</strong> = Κλιμάκιο ÷ 280</p>
+                            <p><strong>ΥΠΕΡΩΡΙΑΚΗ ΜΕΧΡΙ 22:00</strong> = Ωρομίσθιο</p>
+                            <p><strong>ΑΠΟ 22:00 ΜΕΧΡΙ 6:00</strong> = Ωρομίσθιο + 30%</p>
+                            <p><strong>ΠΕΡΑΝ ΚΥΡΙΑΚΗ 6:00-22:00</strong> = Ωρομίσθιο + 40%</p>
+                            <p><strong>ΠΕΡΑΝ ΚΥΡΙΑΚΗ 22:00-6:00</strong> = Ωρομίσθιο + 45%</p>
+                            <p><strong>ΝΥΧΤΕΡΙΝΗ ΕΡΓΑΣΙΑ</strong> = 60% Ωρομισθίου</p>
+                            <p><strong>ΚΥΡΙΑΚΕΣ ΚΑΙ ΕΞΑΙΡΕΣΙΜΕΣ</strong> = 75% Ωρομισθίου</p>
+                            <p><strong>ΠΕΡΑΝ ΠΕΝΘΗΜΕΡΟΥ</strong> = Ωρομίσθιο + 25%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Νέα ενότητα για μισθοί -->
+                <div class="supplementary-section" style="margin-top: 2rem;">
+                    <h3>ΜΙΣΘΟΙ</h3>
+                    
+                    <div class="salary-grid">
+                        <div>
+                            <h4>ΜΙΣΘΟΙ</h4>
+                            
+                            <div class="form-group">
+                                <label for="epanthValue">ΕΠΑΝΘ (€):</label>
+                                <input type="number" id="epanthValue" value="150" step="1" onchange="saveUserValues()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="idsynValue">ΙΔΣΥΝ (€):</label>
+                                <input type="number" id="idsynValue" value="100" step="1" onchange="saveUserValues()">
+                            </div>
+                            
+                            <h5 style="margin-top: 1.5rem; margin-bottom: 1rem;">ΕΠΙΔΟΜΑΤΑ ΤΕΚΝΩΝ</h5>
+                            
+                            <div class="form-group">
+                                <label for="tekn1Value">ΤΕΚΝ1 (€):</label>
+                                <input type="number" id="tekn1Value" value="70" step="1" onchange="saveUserValues()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tekn2Value">ΤΕΚΝ2 (€):</label>
+                                <input type="number" id="tekn2Value" value="120" step="1" onchange="saveUserValues()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tekn3Value">ΤΕΚΝ3 (€):</label>
+                                <input type="number" id="tekn3Value" value="170" step="1" onchange="saveUserValues()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tekn4Value">ΤΕΚΝ4 (€):</label>
+                                <input type="number" id="tekn4Value" value="220" step="1" onchange="saveUserValues()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tekn5Value">ΤΕΚΝ5 (€):</label>
+                                <input type="number" id="tekn5Value" value="290" step="1" onchange="saveUserValues()">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4>ΠΛΗΡΟΦΟΡΙΕΣ</h4>
+                            <div class="result">
+                                <p>Οι τιμές αποθηκεύονται αυτόματα στο πρόγραμμα περιήγησής σας και θα χρησιμοποιούνται στην επόμενη επίσκεψη.</p>
+                                <p style="margin-top: 0.5rem;">Μπορείτε να αλλάξετε οποιαδήποτε τιμή και θα αποθηκευτεί αυτόματα.</p>
+                            </div>
+                            
+                            <div class="example-section" style="margin-top: 1.5rem;">
+                                <h4>Τρέχουσες Τιμές</h4>
+                                <table class="deductions-table">
+                                    <tr>
+                                        <td><strong>ΕΠΑΝΘ</strong></td>
+                                        <td id="currentEpanth">150€</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ΙΔΣΥΝ</strong></td>
+                                        <td id="currentIdsyn">100€</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ΤΕΚΝ1</strong></td>
+                                        <td id="currentTekn1">70€</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ΤΕΚΝ2</strong></td>
+                                        <td id="currentTekn2">120€</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ΤΕΚΝ3</strong></td>
+                                        <td id="currentTekn3">170€</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ΤΕΚΝ4</strong></td>
+                                        <td id="currentTekn4">220€</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ΤΕΚΝ5</strong></td>
+                                        <td id="currentTekn5">290€</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ΕΒΔΟΜΑΔΙΑΙΟΣ ΧΡΟΝΟΣ -->
+            <div id="weekly-time-calc" class="calculator-form">
+                <h3>⏰ ΕΒΔΟΜΑΔΙΑΙΟΣ ΧΡΟΝΟΣ</h3>
+                
+                <div class="weekly-section-title">ΒΑΣΙΚΕΣ ΑΡΧΕΣ ΥΠΟΛΟΓΙΣΜΟΥ</div>
+                
+                <p class="highlight">ΥΠΟΧΡΕΩΤΙΚΕΣ ΩΡΕΣ ΤΗΣ ΕΒΔΟΜΑΔΑΣ: 8,5Χ4=34 ΩΡΕΣ</p>
+                
+                <p><span class="important">Α) ΟΙ ΒΑΡΔΙΕΣ ΚΑΙ ΤΑ ΧΟΡΗΓΟΥΜΕΝΑ ΡΕΠΟ, ΠΟΛΛΑΠΛΑΣΙΑΖΟΝΤΑΙ ΜΕ 8,5 ΩΡΕΣ</span></p>
+                <p><span class="important">Β) ΟΙ ΚΑΝΟΝΙΚΕΣ, ΟΙ ΒΡΑΧΕΙΕΣ ΚΑΙ ΟΙ ΑΝΑΡΡΩΤΙΚΕΣ ΑΦΑΙΡΟΥΝΤΑΙ ΑΠΟ ΤΗΝ ΕΒΔΟΜΑΔΑ</span></p>
+                <p><span class="important">Γ) ΟΙ ΛΟΙΠΕΣ ΑΔΕΙΕΣ ΜΕ 6,8 (34:5=6,8)ΩΡΕΣ ΠΧ ΦΟΙΤΗΤΗΣΙΚΕΣ, ΣΥΝΔΙΚΑΛΙΣΤΙΚΕΣ, ΕΙΔΙΚΕΣ, ΓΑΜΟΥ, ΚΗΔΕΙΑΣ</span></p>
+                
+                <div class="weekly-section-title">ΠΑΡΑΔΕΙΓΜΑΤΑ ΥΠΟΛΟΓΙΣΜΟΥ ΤΩΝ ΗΜΕΡΩΝ ΑΔΕΙΑΣ ΣΕ ΕΒΔΟΜΑΔΙΑΙΑ ΒΑΣΗ</div>
+                
+                <!-- Πίνακας 1 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="important">ΚΑΝ. ΑΔΕΙΑ</td>
+                        <td class="important">ΒΡΑΧ.ΑΔΕΙΑ</td>
+                        <td class="important">ΑΝΑΡ.ΑΔΕΙΑ</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="highlight">ΑΠΟΓΕΥΜΑ</td>
+                        <td class="highlight">ΝΥΧΤΑ</td>
+                        <td>ΑΔΙΑΘΕΤΟ</td>
+                        <td class="calculation">25,5</td>
+                        <td class="calculation">19,4</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Η ΥΠΗΡΕΣΙΑ ΩΦΕΙΛΕΙ 25,5-19,4=6,1 ΩΡΕΣ</td>
+                    </tr>
+                </table>
+                
+                <p class="formula">* ΟΙ ΥΠΟΧΡΕΩΤΙΚΕΣ ΩΡΕΣ ΒΡΙΣΚΟΝΤΑΙ ΜΕ ΤΟΝ ΠΑΡΑΚΑΤΩ ΤΡΟΠΟ:</p>
+                <p class="formula">ΑΦΑΙΡΟΥΜΕ ΤΙΣ 3 ΜΕΡΕΣ ΑΔΕΙΑΣ (ΚΑΝΟΝΙΚΗ,ΒΡΑΧΕΙΑ,ΑΝΑΡΡΩΤΙΚΗ) ΑΠΌ ΤΙΣ 7 ΜΕΡΕΣ ΤΗΣ ΕΒΔΟΜΑΔΑΣ ΚΑΙ</p>
+                <p class="formula">ΜΕ ΤΗΝ ΑΠΛΗ ΜΕΘΟΔΟ ΤΩΝ ΤΡΙΩΝ, ΒΡΙΣΚΟΥΜΕ ΤΟΝ ΥΠΟΧΡΕΩΤΙΚΟ ΧΡΟΝΟ ΕΡΑΣΙΑΣ ΣΤΙΣ ΥΠΟΛΟΙΠΕΣ ΜΕΡΕΣ ΤΗΣ ΕΒΔΟΜΑΔΑΣ. 7-3 = 4</p>
+                <p class="formula">ΣΤΙΣ 7 ΜΕΡΕΣ 34 ΩΡΕΣ	Χ= (34Χ4):7= 19,4</p>
+                <p class="formula">ΣΤΙΣ 4 ΜΕΡΕΣ Χ;</p>
+                
+                <p class="result">ΟΙ ΥΠΟΧΡΕΩΤΙΚΕΣ ΩΡΕΣ ΤΗΣ ΕΒΔΟΜΑΔΑΣ ΕΊΝΑΙ 19,4 ΩΡΕΣ</p>
+                <p class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΡΓΑΣΤΗΚΕ 3Χ8,5=25,5 ΩΡΕΣ ΑΡΑ Η ΥΠΗΡΕΣΙΑ ΤΟΥ ΩΦΕΙΛΕΙ 25,5-19,4=6,1 ΩΡΕΣ</p>
+                
+                <!-- Πίνακας 2 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="important">ΦΟΙΤ. ΑΔΕΙΑ</td>
+                        <td class="important">ΦΟΙΤ. ΑΔΕΙΑ</td>
+                        <td class="important">ΦΟΙΤ. ΑΔΕΙΑ</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="highlight">ΑΠΟΓΕΥΜΑ</td>
+                        <td class="highlight">ΝΥΧΤΑ</td>
+                        <td>ΑΔΙΑΘΕΤΟ</td>
+                        <td class="calculation">45,9</td>
+                        <td class="calculation">34</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Η ΥΠΗΡΕΣΙΑ ΩΦΕΙΛΕΙ 45,9-34=11,9 ΩΡΕΣ</td>
+                    </tr>
+                </table>
+                
+                <p class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΡΓΑΣΤΗΚΕ (3Χ6,8)+(3Χ8,5)=45,9 Η ΥΠΟΧΡΕΩΣΗ ΤΟΥ ΗΤΑΝ 34 ΩΡΕΣ</p>
+                <p class="result">ΔΟΥΛΕΨΕ 11,9 ΩΡΕΣ ΠΕΡΑ ΤΟΥ ΥΠΟΧΡΕΩΤΙΚΟΥ ΔΗΛΑΔΗ ΤΟΥ ΩΦΕΙΛΕΤΑΙ ΈΝΑ ΡΕΠΟ ΚΑΙ 3 ΩΡΕΣ</p>
+                
+                <!-- Πίνακας 3 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="important">ΑΔ. ΓΑΜΟΥ</td>
+                        <td class="important">ΑΔ. ΓΑΜΟΥ</td>
+                        <td class="important">ΑΔ. ΓΑΜΟΥ</td>
+                        <td class="important">ΑΔ. ΓΑΜΟΥ</td>
+                        <td class="important">ΑΔ. ΓΑΜΟΥ</td>
+                        <td class="highlight">ΡΕΠΟ</td>
+                        <td class="highlight">ΡΕΠΟ</td>
+                        <td class="calculation">34</td>
+                        <td class="calculation">34</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΧΕΙ ΚΑΛΥΨΗ ΤΗΝ ΥΠΟΧΡΕΩΣΗ ΤΟΥ</td>
+                    </tr>
+                </table>
+                
+                <!-- Πίνακας 4 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="highlight">ΡΕΠΟ</td>
+                        <td class="highlight">ΡΕΠΟ</td>
+                        <td class="important">ΑΙΜ. ΑΔΕΙΑ</td>
+                        <td class="important">ΑΙΜ. ΑΔΕΙΑ</td>
+                        <td class="important">ΑΙΜ. ΑΔΕΙΑ</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="highlight">ΑΠΟΓΕΥΜΑ</td>
+                        <td class="calculation">37,4</td>
+                        <td class="calculation">34</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Η ΥΠΗΡΕΣΙΑ ΩΦΕΙΛΕΙ 37,4-34=3,4 ΩΡΕΣ</td>
+                    </tr>
+                </table>
+                
+                <p class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΡΓΑΣΤΗΚΕ (3Χ6,8)+(2Χ8,5)=37,4 Η ΥΠΟΧΡΕΩΣΗ ΤΟΥ ΗΤΑΝ 34 ΩΡΕΣ</p>
+                <p class="result">Η ΥΠΗΡΕΣΙΑ ΤΟΥ ΩΦΕΙΛΕΙ 37,4-34=3,4 ΩΡΕΣ</p>
+                
+                <!-- Πίνακας 5 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="highlight">ΑΠΟΓΕΥΜΑ</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="highlight">ΝΥΧΤΑ</td>
+                        <td>ΑΔΙΑΘΕΤΟ</td>
+                        <td class="highlight">ΡΕΠΟ</td>
+                        <td class="important">ΩΦΕΙΛΟΜΕΝΟ ΡΕΠΟ*</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="calculation">42,5</td>
+                        <td class="calculation">34</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Η ΥΠΗΡΕΣΙΑ ΩΦΕΙΛΕΙ 42,5-34=8,5 ΩΡΕΣ</td>
+                    </tr>
+                </table>
+                
+                <p class="important">*ΤΟ ΩΦΕΙΛΟΜΕΝΟ ΡΕΠΟ Ή ΧΡΩΣΤΟΥΜΕΝΟ ΕΑΝ ΧΟΡΗΓΗΘΕΙ ΩΣ ΗΜΕΡΑ ΑΝΑΠΑΥΣΗΣ ΣΤΟ ΕΠΟΜΕΝΟ ΧΡΟΝΙΚΟ ΔΙΑΣΤΗΜΑ, ΥΠΟΛΟΓΙΖΕΤΑΙ ΣΕ 8,5 ΩΡΕΣ</p>
+                
+                <p class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΡΓΑΣΤΗΚΕ (5Χ8,5)=42,5 Η ΥΠΟΧΡΕΩΣΗ ΤΟΥ ΗΤΑΝ 34 ΩΡΕΣ</p>
+                <p class="result">Η ΥΠΗΡΕΣΙΑ ΤΟΥ ΩΦΕΙΛΕΙ 42,5-34=8,5 ΩΡΕΣ, ΔΗΛΑΔΗ ΕΝΑ ΡΕΠΟ ΑΚΡΙΒΩΣ</p>
+                
+                <!-- Πίνακας 6 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="highlight">ΑΠΟΓΕΥΜΑ</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="highlight">ΝΥΧΤΑ</td>
+                        <td>ΑΔΙΑΘΕΤΟ</td>
+                        <td class="important">ΣΥΝΔΙΚΑΛΙΣΤΙΚΗ ΑΔΕΙΑ*</td>
+                        <td class="important">ΣΥΝΔΙΚΑΛΙΣΤΙΚΗ ΑΔΕΙΑ*</td>
+                        <td class="highlight">ΡΕΠΟ</td>
+                        <td class="calculation">39,1</td>
+                        <td class="calculation">34</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Η ΥΠΗΡΕΣΙΑ ΩΦΕΙΛΕΙ 39,1-34=5,4 ΩΡΕΣ</td>
+                    </tr>
+                </table>
+                
+                <p class="important">*Η ΣΥΝΔΙΚΑΛΙΣΤΙΚΗ ΑΔΕΙΑ ΥΠΟΛΟΓΙΖΕΤΑΙ ΜΕ 6,8 ΩΡΕΣ</p>
+                
+                <p class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΡΓΑΣΤΗΚΕ (2Χ6,8)+(3Χ8,5)=39,1 Η ΥΠΟΧΡΕΩΣΗ ΤΟΥ ΗΤΑΝ 34 ΩΡΕΣ</p>
+                <p class="result">Η ΥΠΗΡΕΣΙΑ ΤΟΥ ΩΦΕΙΛΕΙ 39,1-34=5,4 ΩΡΕΣ</p>
+                
+                <!-- Πίνακας 7 -->
+                <table class="weekly-time-table">
+                    <tr class="header-row">
+                        <th>ΔΕΥΤΕΡΑ</th>
+                        <th>ΤΡΙΤΗ</th>
+                        <th>ΤΕΤΑΡΤΗ ΑΡΓΙΑ</th>
+                        <th>ΠΕΜΠΤΗ</th>
+                        <th>ΠΑΡΑΣΚΕΥΗ</th>
+                        <th>ΣΑΒΒΑΤΟ</th>
+                        <th>ΚΥΡΙΑΚΗ</th>
+                        <th>ΣΥΝΟΛΟ ΩΡΩΝ</th>
+                        <th>ΥΠΟΧ/ΚΕΣ ΩΡΕΣ*</th>
+                    </tr>
+                    <tr>
+                        <td class="important">ΚΑΝ. ΑΔΕΙΑ</td>
+                        <td class="important">ΚΑΝ. ΑΔΕΙΑ</td>
+                        <td class="highlight">ΠΡΩΙ</td>
+                        <td class="important">ΕΙΔ. ΑΔΕΙΑ</td>
+                        <td class="highlight">ΑΠΟΓΕΥΜΑ</td>
+                        <td class="highlight">ΝΥΧΤΑ</td>
+                        <td>ΑΔΙΑΘΕΤΟ</td>
+                        <td class="calculation">32,3</td>
+                        <td class="calculation">19,4</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" class="result">Η ΥΠΗΡΕΣΙΑ ΩΦΕΙΛΕΙ 32,3-19,4=12,9 ΩΡΕΣ</td>
+                    </tr>
+                </table>
+                
+                <p class="important">ΣΕ ΑΥΤΌ ΤΟ ΠΑΡΑΔΕΙΓΜΑ ΥΠΑΡΧΕΙ ΑΡΓΙΑ ΜΕΣΑ ΣΤΗ ΕΒΔΟΜΑΔΑ, Η ΟΠΟΙΑ ΥΠΟΛΟΓΙΖΕΤΑΙ ΣΕ 6,8 ΩΡΕΣ. ΔΗΛΑΔΗ ΑΠΌ ΤΙΣ 34 ΑΦΑΙΡΟΥΜΕ ΤΙΣ 6,8 ΩΡΕΣ ΤΗΣ ΑΡΓΙΑΣ. 34-6,8= 27,2. ΑΦΑΙΡΟΥΜΕ ΤΙΣ 2 ΜΕΡΕΣ ΚΑΝΟΝΙΚΗ ΑΔΕΙΑ( 7-2=5)</p>
+                
+                <div class="note">
+                    <strong>ΣΗΜΕΙΩΣΗ:</strong> Όταν η αργία πέφτει καθημερινή, υπολογίζεται σε 6,8 ώρες και αφαιρείται από τις υποχρεωτικές ώρες της εβδομάδας.
+                </div>
+                
+                <p class="formula">ΣΤΙΣ 7 ΜΕΡΕΣ 27,2 ΩΡΕΣ Χ= (27,2Χ5):7= 19,4</p>
+                <p class="formula">ΣΤΙΣ 5 ΜΕΡΕΣ Χ;</p>
+                
+                <p class="result">Ο ΥΠΑΛΛΗΛΟΣ ΕΡΓΑΣΤΗΚΕ 6,8+(3Χ8,5)=32,3 Η ΥΠΟΧΡΕΩΣΗ ΤΟΥ ΗΤΑΝ 19,4 ΩΡΕΣ</p>
+                <p class="result">Η ΥΠΗΡΕΣΙΑ ΤΟΥ ΩΦΕΙΛΕΙ 32,3-19,4=12,9 ΩΡΕΣ ΑΡΑ ΈΝΑ ΡΕΠΟ ΚΑΙ 4,4 ΩΡΕΣ</p>
+            </div>
+
+            <!-- ΔΑΝΕΙΟ -->
+            <div id="loan-calc" class="calculator-form">
+                <h3>🏠 Δάνειο</h3>
+                
+                <div class="loan-grid">
+                    <div class="loan-inputs">
+                        <h4>Πληροφορίες Δανείου</h4>
+                        
+                        <div class="form-group">
+                            <label for="loanAmount">Ποσό Δανείου (€):</label>
+                            <input type="number" id="loanAmount" placeholder="Π.χ. 100000" min="1000" step="1000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="interestRate">Επιτόκιο (% ετήσιο):</label>
+                            <input type="number" id="interestRate" placeholder="Π.χ. 3.5" step="0.1" min="0.1" max="20">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loanTerm">Διάρκεια (έτη):</label>
+                            <input type="number" id="loanTerm" placeholder="Π.χ. 25" min="1" max="40">
+                        </div>
+                        
+                        <button onclick="calculateLoan()">Υπολογισμός Δανείου</button>
+                    </div>
+                    
+                    <div class="loan-results">
+                        <h4>Αποτελέσματα</h4>
+                        
+                        <div id="loan-result" class="result">
+                            <p>Μηνιαία Δόση: <strong id="monthlyPayment">0.00€</strong></p>
+                            <p>Συνολικό Ποσό Πληρωμής: <strong id="totalPayment">0.00€</strong></p>
+                            <p>Συνολικοί Τόκοι: <strong id="totalInterest">0.00€</strong></p>
+                            <p>Αναλογία Τόκων/Κεφαλαίου: <strong id="interestRatio">0%</strong></p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button onclick="generateAmortizationTable()" id="amortization-btn" style="display: none;">
+                                📋 Πίνακας Αποπληρωμής
+                            </button>
+                        </div>
+                        
+                        <div id="amortization-table-container" style="display: none;">
+                            <h5>Πίνακας Αποπληρωμής (πρώτα 12 μήνες)</h5>
+                            <div style="max-height: 400px; overflow-y: auto;">
+                                <table class="amortization-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Μήνας</th>
+                                            <th>Δόση</th>
+                                            <th>Τόκοι</th>
+                                            <th>Κεφάλαιο</th>
+                                            <th>Υπόλοιπο</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="amortization-body">
+                                        <!-- Amortization table will be filled by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ΚΑΡΤΕΛΑ ΔΙΑΧΕΙΡΙΣΗΣ ΔΕΔΟΜΕΝΩΝ -->
+            <div id="data-management-calc" class="calculator-form">
+                <h3>💾 Διαχείριση Δεδομένων</h3>
+                
+                <div class="data-management">
+                    <h4>Στατιστικά Δεδομένων</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div>📅 Βάρδιες</div>
+                            <div class="summary-value" id="shifts-count">0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div>🎨 Τύποι Βαρδιών</div>
+                            <div class="summary-value" id="shift-types-count">0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div>💵 Δεδομένα Μισθών</div>
+                            <div class="summary-value" id="salary-data-count">ΟΧΙ</div>
+                        </div>
+                        <div class="summary-item">
+                            <div>💾 Σύνολο Δεδομένων</div>
+                            <div class="summary-value" id="total-data-size">0 KB</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="data-management">
+                    <h4>Εξαγωγή Δεδομένων</h4>
+                    <div class="data-buttons">
+                        <button class="export-btn" onclick="exportCalendarData()">📤 Εξαγωγή Ημερολογίου</button>
+                        <button class="export-btn" onclick="exportAllData()">📤 Εξαγωγή Όλων</button>
+                    </div>
+                </div>
+                
+                <div class="data-management">
+                    <h4>Εισαγωγή Δεδομένων</h4>
+                    <div class="data-buttons">
+                        <button class="import-btn" onclick="document.getElementById('import-calendar-file').click()">
+                            📥 Εισαγωγή Ημερολογίου
+                        </button>
+                        <button class="import-btn" onclick="document.getElementById('import-all-file').click()">
+                            📥 Εισαγωγή Όλων
+                        </button>
+                    </div>
+                    
+                    <input type="file" id="import-calendar-file" class="file-input" accept=".json" onchange="importCalendarData(this.files[0])">
+                    <input type="file" id="import-all-file" class="file-input" accept=".json" onchange="importAllData(this.files[0])">
+                </div>
+                
+                <div class="data-info">
+                    <h5>Πληροφορίες</h5>
+                    <p>• Τα δεδομένα αποθηκεύονται αυτόματα στο πρόγραμμα περιήγησής σας</p>
+                    <p>• Η εξαγωγή/εισαγωγή σας επιτρέπει να δημιουργήσετε αντίγραφα ασφαλείας</p>
+                    <p>• Μπορείτε να μεταφέρετε τα δεδομένα σας σε άλλο υπολογιστή</p>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        <p>Δημιουργήθηκε με HTML, CSS και JavaScript</p>
+    </footer>
+
+    <script>
+        // =============================================
+        // ΟΛΟΚΛΗΡΩΜΕΝΟΣ ΚΩΔΙΚΑΣ ΜΕ ΟΛΕΣ ΤΙΣ ΛΕΙΤΟΥΡΓΙΕΣ
+        // =============================================
+
+        // Global variables
+        let currentDate = new Date();
+        let shifts = JSON.parse(localStorage.getItem('shifts')) || [];
+        let shiftTypes = JSON.parse(localStorage.getItem('shiftTypes')) || [];
+        let salaryScale = [];
+        let currentScale = 1;
+
+        // Δεδομένα για ΥΠΟΛ ΣΥΝΤΑΞΗΣ - Τώρα με δυνατότητα επεξεργασίας
+        let dtkData = JSON.parse(localStorage.getItem('dtkData')) || {
+            "2002": 1.31824444, "2003": 1.27366612, "2004": 1.23777077,
+            "2005": 1.19591379, "2006": 1.15883119, "2007": 1.12617219,
+            "2008": 1.08077946, "2009": 1.06796389, "2010": 1.02002282,
+            "2011": 1.00000000, "2012": 1.00000000, "2013": 1.00000000,
+            "2014": 1.00000000, "2015": 1.01181054, "2016": 1.01997030,
+            "2017": 1.00887270, "2018": 1.00285557, "2019": 1.00000000,
+            "2020": 1.01200000, "2021": 1.00000000, "2022": 1.00000000,
+            "2023": 1.00000000, "2024": 1.00000000, "2025": 1.00000000,
+            "2026": 1.00000000, "2027": 1.00000000, "2028": 1.00000000,
+            "2029": 1.00000000, "2030": 1.00000000, "2031": 1.00000000,
+            "2032": 1.00000000, "2033": 1.00000000, "2034": 1.00000000,
+            "2035": 1.00000000
+        };
+
+        // Percentage table data
+        const percentageData = [
+            { years: 15, percentage: 11.55 }, { years: 16, percentage: 12.39 },
+            { years: 17, percentage: 13.23 }, { years: 18, percentage: 14.07 },
+            { years: 19, percentage: 14.97 }, { years: 20, percentage: 15.87 },
+            { years: 21, percentage: 16.77 }, { years: 22, percentage: 17.73 },
+            { years: 23, percentage: 18.69 }, { years: 24, percentage: 19.65 },
+            { years: 25, percentage: 20.68 }, { years: 26, percentage: 21.71 },
+            { years: 27, percentage: 22.74 }, { years: 28, percentage: 23.95 },
+            { years: 29, percentage: 25.16 }, { years: 30, percentage: 26.37 },
+            { years: 31, percentage: 28.35 }, { years: 32, percentage: 30.33 },
+            { years: 33, percentage: 32.31 }, { years: 34, percentage: 34.81 },
+            { years: 35, percentage: 37.31 }, { years: 36, percentage: 39.81 },
+            { years: 37, percentage: 42.36 }, { years: 38, percentage: 44.91 },
+            { years: 39, percentage: 47.46 }, { years: 40, percentage: 50.01 }
+        ];
+
+        // Ranta table data
+        const rantaData = [
+            { age: 40, ranta: 33.435 }, { age: 41, ranta: 32.886 }, { age: 42, ranta: 32.332 },
+            { age: 43, ranta: 31.772 }, { age: 44, ranta: 31.208 }, { age: 45, ranta: 30.639 },
+            { age: 46, ranta: 30.066 }, { age: 47, ranta: 29.489 }, { age: 48, ranta: 28.908 },
+            { age: 49, ranta: 28.323 }, { age: 50, ranta: 27.735 }, { age: 51, ranta: 27.143 },
+            { age: 52, ranta: 26.548 }, { age: 53, ranta: 25.949 }, { age: 54, ranta: 25.347 },
+            { age: 55, ranta: 24.742 }, { age: 56, ranta: 24.136 }, { age: 57, ranta: 23.528 },
+            { age: 58, ranta: 22.919 }, { age: 59, ranta: 22.308 }, { age: 60, ranta: 21.693 },
+            { age: 61, ranta: 21.075 }, { age: 62, ranta: 20.453 }, { age: 63, ranta: 19.827 },
+            { age: 64, ranta: 19.197 }, { age: 65, ranta: 18.565 }, { age: 66, ranta: 17.931 },
+            { age: 67, ranta: 17.297 }, { age: 68, ranta: 16.665 }, { age: 69, ranta: 16.033 },
+            { age: 70, ranta: 15.401 }, { age: 71, ranta: 14.768 }, { age: 72, ranta: 14.132 }
+        ];
+
+        // =============================================
+        // ΑΡΧΙΚΟΠΟΙΗΣΗ ΣΥΣΤΗΜΑΤΟΣ
+        // =============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+        });
+
+        function initializeSystem() {
+            // Αρχικοποίηση θεμάτων
+            initializeTheme();
+            
+            // Αρχικοποίηση καρτελών
+            initializeCalculatorTabs();
+            
+            // Αρχικοποίηση πινάκων
+            initializePercentageTable();
+            initializeRantaTable();
+            initializePensionableEarningsTable();
+            initializeDtkManagement(); // ΝΕΟ: Αρχικοποίηση διαχείρισης ΔΤΚ
+            
+            // Αρχικοποίηση μισθολογίου
+            loadUserValues();
+            initializeSalaryScale();
+            
+            // Αρχικοποίηση ημερολογίου
+            initializeShiftTypes();
+            initializeCalendar();
+            
+            // Αρχικοποίηση event listeners
+            initializeEventListeners();
+            
+            // Αρχικοποίηση δεδομένων
+            updateDataStats();
+        }
+
+        function initializeTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.textContent = '☀️';
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                themeToggle.textContent = isDark ? '☀️' : '🌙';
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+        }
+
+        function initializeCalculatorTabs() {
+            const calcTypeButtons = document.querySelectorAll('.calc-type-btn');
+            const calculatorForms = document.querySelectorAll('.calculator-form');
+
+            calcTypeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    calcTypeButtons.forEach(btn => btn.classList.remove('active'));
+                    calculatorForms.forEach(form => form.classList.remove('active'));
+                    
+                    button.classList.add('active');
+                    const calcType = button.getAttribute('data-calc');
+                    document.getElementById(`${calcType}-calc`).classList.add('active');
+                    
+                    // Ειδική αρχικοποίηση για κάθε καρτέλα
+                    if (calcType === 'pensionable-earnings') {
+                        initializePensionableEarningsTable();
+                    } else if (calcType === 'data-management') {
+                        updateDataStats();
+                    }
+                });
+            });
+        }
+
+        function initializeEventListeners() {
+            // Ημερολόγιο event listeners
+            document.getElementById('prev-month').addEventListener('click', previousMonth);
+            document.getElementById('next-month').addEventListener('click', nextMonth);
+            document.getElementById('add-shift-type').addEventListener('click', addShiftType);
+            document.getElementById('save-shift').addEventListener('click', saveShift);
+            document.getElementById('delete-shift').addEventListener('click', deleteShift);
+            
+            document.getElementById('shift-type').addEventListener('change', function() {
+                const selectedType = this.value;
+                const customHours = document.getElementById('custom-hours');
+                if (selectedType === 'custom') {
+                    customHours.style.display = 'block';
+                } else {
+                    customHours.style.display = 'none';
+                }
+            });
+
+            // Αυτόματος υπολογισμός για ΕΦΑΠΑΞ
+            const efapaxInputs = ['earnings2009', 'earnings2010', 'earnings2011', 'earnings2012', 'earnings2013', 'totalContributions2014'];
+            efapaxInputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateEfapax);
+            });
+        }
+
+        // =============================================
+        // ΝΕΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ΓΙΑ ΔΙΑΧΕΙΡΙΣΗ ΔΤΚ
+        // =============================================
+
+        // Αποθήκευση ΔΤΚ δεδομένων
+        function saveDtkData() {
+            localStorage.setItem('dtkData', JSON.stringify(dtkData));
+        }
+
+        // Επαναφορά ΔΤΚ σε προεπιλεγμένες τιμές
+        function resetDtkValues() {
+            if (confirm('Θέλετε σίγουρα να επαναφέρετε τις τιμές ΔΤΚ στις προεπιλεγμένες;')) {
+                dtkData = {
+                    "2002": 1.31824444, "2003": 1.27366612, "2004": 1.23777077,
+                    "2005": 1.19591379, "2006": 1.15883119, "2007": 1.12617219,
+                    "2008": 1.08077946, "2009": 1.06796389, "2010": 1.02002282,
+                    "2011": 1.00000000, "2012": 1.00000000, "2013": 1.00000000,
+                    "2014": 1.00000000, "2015": 1.01181054, "2016": 1.01997030,
+                    "2017": 1.00887270, "2018": 1.00285557, "2019": 1.00000000,
+                    "2020": 1.01200000, "2021": 1.00000000, "2022": 1.00000000,
+                    "2023": 1.00000000, "2024": 1.00000000, "2025": 1.00000000,
+                    "2026": 1.00000000, "2027": 1.00000000, "2028": 1.00000000,
+                    "2029": 1.00000000, "2030": 1.00000000, "2031": 1.00000000,
+                    "2032": 1.00000000, "2033": 1.00000000, "2034": 1.00000000,
+                    "2035": 1.00000000
+                };
+                saveDtkData();
+                initializePensionableEarningsTable();
+                initializeDtkManagement();
+                alert('Οι τιμές ΔΤΚ επαναφέρθηκαν επιτυχώς!');
+            }
+        }
+
+        // Αρχικοποίηση διαχείρισης ΔΤΚ
+        function initializeDtkManagement() {
+            const container = document.getElementById('dtk-management-container');
+            container.innerHTML = '';
+            
+            // Ομαδοποίηση των ετών ανά δεκαετία για καλύτερη οργάνωση
+            const decades = {};
+            for (let year = 2002; year <= 2035; year++) {
+                const decade = Math.floor(year / 10) * 10;
+                if (!decades[decade]) decades[decade] = [];
+                decades[decade].push(year);
+            }
+            
+            // Δημιουργία πλαισίων για κάθε δεκαετία
+            for (const decade in decades) {
+                const decadeSection = document.createElement('div');
+                decadeSection.className = 'decade-section';
+                decadeSection.style.border = '1px solid var(--primary-color)';
+                decadeSection.style.borderRadius = '5px';
+                decadeSection.style.padding = '1rem';
+                decadeSection.style.marginBottom = '1rem';
+                
+                const decadeTitle = document.createElement('h5');
+                decadeTitle.textContent = `Δεκαετία ${decade}`;
+                decadeTitle.style.marginBottom = '0.5rem';
+                decadeTitle.style.color = 'var(--primary-color)';
+                decadeSection.appendChild(decadeTitle);
+                
+                const yearsGrid = document.createElement('div');
+                yearsGrid.style.display = 'grid';
+                yearsGrid.style.gridTemplateColumns = '1fr 1fr';
+                yearsGrid.style.gap = '0.5rem';
+                
+                decades[decade].forEach(year => {
+                    const yearItem = document.createElement('div');
+                    yearItem.style.display = 'flex';
+                    yearItem.style.flexDirection = 'column';
+                    yearItem.style.gap = '0.25rem';
+                    
+                    const yearLabel = document.createElement('label');
+                    yearLabel.textContent = year;
+                    yearLabel.style.fontSize = '0.9rem';
+                    yearLabel.style.fontWeight = 'bold';
+                    
+                    const yearInput = document.createElement('input');
+                    yearInput.type = 'number';
+                    yearInput.step = '0.000001';
+                    yearInput.value = dtkData[year] || 1.000000;
+                    yearInput.style.padding = '0.25rem';
+                    yearInput.style.border = '1px solid #ddd';
+                    yearInput.style.borderRadius = '3px';
+                    yearInput.addEventListener('change', function() {
+                        dtkData[year] = parseFloat(this.value);
+                        saveDtkData();
+                        updatePensionableEarnings(); // Ανανέωση των υπολογισμών
+                    });
+                    
+                    yearItem.appendChild(yearLabel);
+                    yearItem.appendChild(yearInput);
+                    yearsGrid.appendChild(yearItem);
+                });
+                
+                decadeSection.appendChild(yearsGrid);
+                container.appendChild(decadeSection);
+            }
+        }
+
+        // =============================================
+        // ΤΡΟΠΟΠΟΙΗΜΕΝΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ΓΙΑ ΥΠΟΛ ΣΥΝΤΑΞΗΣ
+        // =============================================
+
+        function initializePensionableEarningsTable() {
+            const tableBody = document.getElementById('pensionable-earnings-body');
+            tableBody.innerHTML = '';
+            
+            // Φόρτωση αποθηκευμένων δεδομένων
+            const savedEarnings = JSON.parse(localStorage.getItem('pensionableEarnings')) || {};
+            const savedDM = JSON.parse(localStorage.getItem('pensionableDM')) || {};
+            
+            // Ενημέρωση dropdown επιλογής έτους
+            const yearSelect = document.getElementById('selected-year');
+            yearSelect.innerHTML = '';
+            
+            for (let year = 2002; year <= 2035; year++) {
+                const row = document.createElement('tr');
+                const dtk = dtkData[year] || 1.00000000;
+                const savedValue = savedEarnings[year] || '';
+                const savedDMValue = savedDM[year] || '';
+                
+                row.innerHTML = `
+                    <td>${year}</td>
+                    <td>
+                        <input type="number" id="earnings-${year}" class="earnings-input" 
+                               value="${savedValue}" placeholder="0.00" step="0.01" min="0" 
+                               onchange="updatePensionableEarnings()">
+                    </td>
+                    <td>${dtk.toFixed(8)}</td>
+                    <td id="adjusted-${year}">${(savedValue * dtk).toFixed(2) || '0.00'}</td>
+                    <td>
+                        <input type="number" id="dm-${year}" class="dm-input" 
+                               value="${savedDMValue}" placeholder="0.0" step="0.1" min="0" 
+                               onchange="updateDMValues()">
+                    </td>
+                    <td id="dm-result-${year}">0.00</td>
+                `;
+                
+                tableBody.appendChild(row);
+                
+                // Προσθήκη επιλογής στο dropdown
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+            
+            // Προεπιλογή του τελευταίου έτους
+            yearSelect.value = 2035;
+            
+            updatePensionableEarnings();
+            updateDMValues();
+        }
+
+        function updatePensionableEarnings() {
+            let totalEarnings = 0;
+            let totalAdjusted = 0;
+            const earningsData = {};
+            
+            for (let year = 2002; year <= 2035; year++) {
+                const earningsInput = document.getElementById(`earnings-${year}`);
+                const adjustedCell = document.getElementById(`adjusted-${year}`);
+                const dtk = dtkData[year] || 1.00000000;
+                
+                const earnings = parseFloat(earningsInput.value) || 0;
+                const adjusted = earnings * dtk;
+                
+                adjustedCell.textContent = adjusted.toFixed(2);
+                
+                totalEarnings += earnings;
+                totalAdjusted += adjusted;
+                earningsData[year] = earnings;
+            }
+            
+            document.getElementById('total-earnings').textContent = totalEarnings.toFixed(2);
+            document.getElementById('total-adjusted').textContent = totalAdjusted.toFixed(2);
+            
+            // Αποθήκευση δεδομένων
+            localStorage.setItem('pensionableEarnings', JSON.stringify(earningsData));
+        }
+
+        function updateDMValues() {
+            const dmData = {};
+            
+            for (let year = 2002; year <= 2035; year++) {
+                const dmInput = document.getElementById(`dm-${year}`);
+                const dmResultCell = document.getElementById(`dm-result-${year}`);
+                const adjustedCell = document.getElementById(`adjusted-${year}`);
+                
+                const dmValue = parseFloat(dmInput.value) || 0;
+                const adjustedValue = parseFloat(adjustedCell.textContent) || 0;
+                
+                // Υπολογισμός μηνιαίου μισθού μετά DM
+                const yearsFrom2002 = year - 2002 + 1;
+                const monthlySalary = adjustedValue / yearsFrom2002 / 12;
+                const salaryAfterDM = monthlySalary * (1 + dmValue / 100);
+                
+                dmResultCell.textContent = salaryAfterDM.toFixed(2);
+                dmData[year] = dmValue;
+            }
+            
+            // Αποθήκευση δεδομένων DM
+            localStorage.setItem('pensionableDM', JSON.stringify(dmData));
+        }
+
+        function calculatePensionableSalary() {
+            const selectedYear = parseInt(document.getElementById('selected-year').value);
+            const totalAdjusted = parseFloat(document.getElementById('total-adjusted').textContent) || 0;
+            const dmPercentage = parseFloat(document.getElementById('dm-percentage').value) || 0;
+            
+            const yearsFrom2002 = selectedYear - 2002 + 1;
+            const monthlySalary = totalAdjusted / yearsFrom2002 / 12;
+            const pensionableSalary = monthlySalary * (1 + dmPercentage / 100);
+            
+            document.getElementById('result-total-adjusted').textContent = totalAdjusted.toFixed(2) + '€';
+            document.getElementById('result-monthly-salary').textContent = monthlySalary.toFixed(2) + '€';
+            document.getElementById('result-pensionable-salary').textContent = pensionableSalary.toFixed(2) + '€';
+        }
+
+        function updatePensionPercentage() {
+            const totalYears = parseInt(document.getElementById('total-years-pension').value) || 35;
+            let percentage = 0;
+            
+            if (totalYears >= 15) {
+                if (totalYears <= 40) {
+                    const data = percentageData.find(item => item.years === totalYears);
+                    percentage = data ? data.percentage : 0;
+                } else {
+                    percentage = 50.01 + (totalYears - 40) * 0.50;
+                }
+            }
+            
+            document.getElementById('pension-percentage').value = percentage.toFixed(2);
+        }
+
+        function calculateFinalPension() {
+            const pensionableSalary = parseFloat(document.getElementById('result-pensionable-salary').textContent) || 0;
+            const totalYears = parseInt(document.getElementById('total-years-pension').value) || 35;
+            const nationalPension = parseFloat(document.getElementById('national-pension').value) || 436;
+            const percentage = parseFloat(document.getElementById('pension-percentage').value) || 0;
+            
+            const mainPension = pensionableSalary * (percentage / 100);
+            const totalBeforeDeductions = mainPension + nationalPension;
+            const healthDeduction = totalBeforeDeductions * 0.06;
+            const finalPension = totalBeforeDeductions - healthDeduction;
+            
+            document.getElementById('result-percentage').textContent = percentage.toFixed(2) + '%';
+            document.getElementById('result-main-pension').textContent = mainPension.toFixed(2) + '€';
+            document.getElementById('result-total-before').textContent = totalBeforeDeductions.toFixed(2) + '€';
+            document.getElementById('result-health-deduction').textContent = healthDeduction.toFixed(2) + '€';
+            document.getElementById('result-final-pension').textContent = finalPension.toFixed(2) + '€';
+        }
+
+        // =============================================
+        // ΚΥΡΙΑ ΣΥΝΤΑΞΗ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function initializePercentageTable() {
+            const tableBody = document.getElementById('percentageTableBody');
+            tableBody.innerHTML = '';
+            
+            for (let i = 0; i < percentageData.length; i += 2) {
+                const row = document.createElement('tr');
+                
+                const cell1 = document.createElement('td');
+                cell1.textContent = percentageData[i].years;
+                row.appendChild(cell1);
+                
+                const cell2 = document.createElement('td');
+                cell2.textContent = percentageData[i].percentage.toFixed(2) + '%';
+                row.appendChild(cell2);
+                
+                if (i + 1 < percentageData.length) {
+                    const cell3 = document.createElement('td');
+                    cell3.textContent = percentageData[i + 1].years;
+                    row.appendChild(cell3);
+                    
+                    const cell4 = document.createElement('td');
+                    cell4.textContent = percentageData[i + 1].percentage.toFixed(2) + '%';
+                    row.appendChild(cell4);
+                } else {
+                    row.appendChild(document.createElement('td'));
+                    row.appendChild(document.createElement('td'));
+                }
+                
+                tableBody.appendChild(row);
+            }
+        }
+
+        function updatePercentage() {
+            const totalYears = parseInt(document.getElementById('totalYears').value);
+            let percentage = 0;
+            
+            if (totalYears >= 15) {
+                if (totalYears <= 40) {
+                    const data = percentageData.find(item => item.years === totalYears);
+                    percentage = data ? data.percentage : 0;
+                } else {
+                    percentage = 50.01 + (totalYears - 40) * 0.50;
+                }
+            }
+            
+            document.getElementById('percentageResult').textContent = percentage.toFixed(2) + '%';
+        }
+
+        function calculatePension() {
+            const totalPensionableEarnings = parseFloat(document.getElementById('totalPensionableEarnings').value);
+            const dtkMultiplier = parseFloat(document.getElementById('dtkMultiplier').value);
+            const dmPercentage = parseFloat(document.getElementById('dmPercentage').value) || 0;
+            const yearsAfter2002 = parseFloat(document.getElementById('yearsAfter2002').value);
+            const totalYears = parseFloat(document.getElementById('totalYears').value);
+            const nationalPension = parseFloat(document.getElementById('nationalPension').value);
+            
+            if (isNaN(totalPensionableEarnings) || isNaN(yearsAfter2002) || isNaN(totalYears)) {
+                document.getElementById('pension-result').innerHTML = '<p>Παρακαλώ εισάγετε έγκυρες τιμές.</p>';
+                return;
+            }
+            
+            const totalAfterDTK = totalPensionableEarnings * dtkMultiplier;
+            const monthlyPensionableEarnings = (totalAfterDTK / yearsAfter2002) / 12;
+            const monthlyAfterDM = monthlyPensionableEarnings * (1 + dmPercentage / 100);
+            
+            let percentage = 0;
+            if (totalYears >= 15) {
+                if (totalYears <= 40) {
+                    const data = percentageData.find(item => item.years === totalYears);
+                    percentage = data ? data.percentage : 0;
+                } else {
+                    percentage = 50.01 + (totalYears - 40) * 0.50;
+                }
+            }
+            
+            const mainPension = monthlyAfterDM * (percentage / 100);
+            const totalBeforeDeductions = mainPension + nationalPension;
+            const deduction = totalBeforeDeductions * 0.06;
+            const finalPension = totalBeforeDeductions - deduction;
+            
+            document.getElementById('pension-result').innerHTML = `
+                <h4>Αποτελέσματα Υπολογισμού Σύνταξης</h4>
+                <div class="calculation-steps">
+                    <p><strong>Βήμα 1:</strong> ΣΥΝΟΛΟ μετά ΔТК = ${totalPensionableEarnings.toFixed(2)}€ × ${dtkMultiplier} = <strong>${totalAfterDTK.toFixed(2)}€</strong></p>
+                    <p><strong>Βήμα 2:</strong> Μηνιαίες Συνταξίμες Αποδοχές = (${totalAfterDTK.toFixed(2)}€ / ${yearsAfter2002} έτη) / 12 μήνες = <strong>${monthlyPensionableEarnings.toFixed(2)}€</strong></p>
+                    <p><strong>Βήμα 3:</strong> Μηνιαίες μετά ΔМ = ${monthlyPensionableEarnings.toFixed(2)}€ + ${dmPercentage}% = <strong>${monthlyAfterDM.toFixed(2)}€</strong></p>
+                    <p><strong>Βήμα 4:</strong> Ποσοστό Αναπλήρωσης (${totalYears} έτη) = <strong>${percentage.toFixed(2)}%</strong></p>
+                    <p><strong>Βήμα 5:</strong> Κύρια Σύνταξη = ${monthlyAfterDM.toFixed(2)}€ × ${percentage.toFixed(2)}%</p>
+                </div>
+                <p>ΣΥΝΟΛΟ μετά ΔТК: <strong>€${totalAfterDTK.toFixed(2)}</strong></p>
+                <p>Μηνιαίες Συνταξίμες Αποδοχές: <strong>€${monthlyPensionableEarnings.toFixed(2)}</strong></p>
+                <p>Μηνιαίες μετά ΔМ ${dmPercentage}%: <strong>€${monthlyAfterDM.toFixed(2)}</strong></p>
+                <p>Ποσοστό Αναπλήρωσης (${totalYears} έτη): <strong>${percentage.toFixed(2)}%</strong></p>
+                <p>Κύρια Σύνταξη: <strong>€${mainPension.toFixed(2)}</strong></p>
+                <p>Εθνική Σύνταξη: <strong>€${nationalPension.toFixed(2)}</strong></p>
+                <p>Σύνολο προς κράτησης: <strong>€${totalBeforeDeductions.toFixed(2)}</strong></p>
+                <p>Κράτηση Υγείας (6%): <strong>-€${deduction.toFixed(2)}</strong></p>
+                <p style="font-size: 1.2em; font-weight: bold; color: var(--primary-color); margin-top: 1rem;">
+                    Τελική Μηνιαία Σύνταξη: €${finalPension.toFixed(2)}
+                </p>
+            `;
+        }
+
+        // =============================================
+        // ΕΠΙΚΟΥΡΙΚΗ ΣΥΝΤΑΞΗ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function initializeRantaTable() {
+            const tableBody = document.getElementById('rantaTableBody');
+            tableBody.innerHTML = '';
+            
+            for (let i = 0; i < rantaData.length; i += 3) {
+                const row = document.createElement('tr');
+                
+                const cell1 = document.createElement('td');
+                cell1.textContent = rantaData[i].age;
+                row.appendChild(cell1);
+                
+                const cell2 = document.createElement('td');
+                cell2.textContent = rantaData[i].ranta.toFixed(3);
+                row.appendChild(cell2);
+                
+                if (i + 1 < rantaData.length) {
+                    const cell3 = document.createElement('td');
+                    cell3.textContent = rantaData[i + 1].age;
+                    row.appendChild(cell3);
+                    
+                    const cell4 = document.createElement('td');
+                    cell4.textContent = rantaData[i + 1].ranta.toFixed(3);
+                    row.appendChild(cell4);
+                } else {
+                    row.appendChild(document.createElement('td'));
+                    row.appendChild(document.createElement('td'));
+                }
+                
+                if (i + 2 < rantaData.length) {
+                    const cell5 = document.createElement('td');
+                    cell5.textContent = rantaData[i + 2].age;
+                    row.appendChild(cell5);
+                    
+                    const cell6 = document.createElement('td');
+                    cell6.textContent = rantaData[i + 2].ranta.toFixed(3);
+                    row.appendChild(cell6);
+                } else {
+                    row.appendChild(document.createElement('td'));
+                    row.appendChild(document.createElement('td'));
+                }
+                
+                tableBody.appendChild(row);
+            }
+        }
+
+        function updateRanta() {
+            const age = parseInt(document.getElementById('currentAge').value);
+            const rantaDataItem = rantaData.find(item => item.age === age);
+            
+            if (rantaDataItem) {
+                document.getElementById('rantaValue').value = rantaDataItem.ranta.toFixed(3);
+            } else {
+                document.getElementById('rantaValue').value = '';
+            }
+        }
+
+        function calculateSupplementary2014() {
+            const earnings = parseFloat(document.getElementById('supplementaryEarnings').value);
+            const years = parseFloat(document.getElementById('supplementaryYears').value);
+            const factor = 0.45;
+            
+            if (isNaN(earnings) || isNaN(years)) {
+                document.getElementById('supplementary2014-result').innerHTML = '<p>Παρακαλώ εισάγετε έγκυρες τιμές.</p>';
+                return;
+            }
+            
+            const supplementaryPension = earnings * years * (factor / 100);
+            const deduction = supplementaryPension * 0.06;
+            const finalSupplementary = supplementaryPension - deduction;
+            
+            document.getElementById('supplementary2014-result').innerHTML = `
+                <p><strong>Επικουρική Μέχρι 2014</strong></p>
+                <p>Υπολογισμός: ${earnings.toFixed(2)}€ × ${years} έτη × 0.45%</p>
+                <p>Επικουρική προς κράτησης: <strong>€${supplementaryPension.toFixed(2)}</strong></p>
+                <p>Κράτηση Υγείας (6%): <strong>-€${deduction.toFixed(2)}</strong></p>
+                <p style="font-weight: bold; color: var(--primary-color);">
+                    Τελική Επικουρική: €${finalSupplementary.toFixed(2)}
+                </p>
+            `;
+            
+            updateTotalSupplementary();
+        }
+
+        function calculateSupplementary2015() {
+            const contributions = parseFloat(document.getElementById('totalContributions').value);
+            const age = parseInt(document.getElementById('currentAge').value);
+            const rantaDataItem = rantaData.find(item => item.age === age);
+            
+            if (isNaN(contributions) || !rantaDataItem) {
+                document.getElementById('supplementary2015-result').innerHTML = '<p>Παρακαλώ εισάγετε έγκυρες τιμές.</p>';
+                return;
+            }
+            
+            const ranta = rantaDataItem.ranta;
+            const supplementaryPension = contributions / ranta / 12;
+            const deduction = supplementaryPension * 0.06;
+            const finalSupplementary = supplementaryPension - deduction;
+            
+            document.getElementById('supplementary2015-result').innerHTML = `
+                <p><strong>Επικουρική Μετά το 2014</strong></p>
+                <p>Υπολογισμός: ${contributions.toFixed(2)}€ / ${ranta.toFixed(3)} / 12</p>
+                <p>Επικουρική προς κράτησης: <strong>€${supplementaryPension.toFixed(2)}</strong></p>
+                <p>Κράτηση Υγείας (6%): <strong>-€${deduction.toFixed(2)}</strong></p>
+                <p style="font-weight: bold; color: var(--primary-color);">
+                    Τελική Επικουρική: €${finalSupplementary.toFixed(2)}
+                </p>
+            `;
+            
+            updateTotalSupplementary();
+        }
+
+        function updateTotalSupplementary() {
+            const result2014 = document.getElementById('supplementary2014-result');
+            const result2015 = document.getElementById('supplementary2015-result');
+            
+            let total = 0;
+            
+            if (result2014.innerHTML.includes('Τελική Επικουρική:')) {
+                const match2014 = result2014.innerHTML.match(/Τελική Επικουρική: €([\d.]+)/);
+                if (match2014) total += parseFloat(match2014[1]);
+            }
+            
+            if (result2015.innerHTML.includes('Τελική Επικουρική:')) {
+                const match2015 = result2015.innerHTML.match(/Τελική Επικουρική: €([\d.]+)/);
+                if (match2015) total += parseFloat(match2015[1]);
+            }
+            
+            if (total > 0) {
+                document.getElementById('total-supplementary-result').innerHTML = `
+                    <h4>Συνολική Επικουρική Σύνταξη</h4>
+                    <p style="font-size: 1.3em; font-weight: bold; color: var(--primary-color);">
+                        Σύνολο Επικουρικής: €${total.toFixed(2)}
+                    </p>
+                `;
+            }
+        }
+
+        // =============================================
+        // ΜΤΠΥ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function calculateMTPY() {
+            const earnings = parseFloat(document.getElementById('mtpyEarnings').value);
+            const years = parseFloat(document.getElementById('mtpyYears').value);
+            const factor = parseFloat(document.getElementById('mtpyFactor').value);
+            
+            if (isNaN(earnings) || isNaN(years) || isNaN(factor)) {
+                document.getElementById('mtpy-result').innerHTML = '<p>Παρακαλώ εισάγετε έγκυρες τιμές.</p>';
+                return;
+            }
+            
+            const dividend = earnings * years * (factor / 100);
+            
+            document.getElementById('mtpy-result').innerHTML = `
+                <h4>Αποτελέσματα Υπολογισμού ΜΤΠΥ</h4>
+                <div class="calculation-steps">
+                    <p><strong>Τύπος:</strong> Μερίσματα = Συνταξίμες Αποδοχές × Έτη × Συντελεστής</p>
+                    <p><strong>Βήμα 1:</strong> ${earnings.toFixed(2)}€ × ${years} έτη × ${factor}%</p>
+                    <p><strong>Βήμα 2:</strong> ${earnings.toFixed(2)}€ × ${years} × ${(factor/100).toFixed(4)}</p>
+                </div>
+                <p>Συνταξίμες Αποδοχές: <strong>€${earnings.toFixed(2)}</strong></p>
+                <p>Έτη (με εισφορές): <strong>${years}</strong></p>
+                <p>Συντελεστής Μετοχικού: <strong>${factor}%</strong></p>
+                <p style="font-size: 1.3em; font-weight: bold; color: var(--primary-color); margin-top: 1rem;">
+                    Μερίσματα ΜΤΠΥ: €${dividend.toFixed(2)}
+                </p>
+            `;
+        }
+
+        // =============================================
+        // ΕΦΑΠΑΞ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function calculateEfapax() {
+            const earnings2009 = parseFloat(document.getElementById('earnings2009').value) || 0;
+            const earnings2010 = parseFloat(document.getElementById('earnings2010').value) || 0;
+            const earnings2011 = parseFloat(document.getElementById('earnings2011').value) || 0;
+            const earnings2012 = parseFloat(document.getElementById('earnings2012').value) || 0;
+            const earnings2013 = parseFloat(document.getElementById('earnings2013').value) || 0;
+            
+            const totalContributions2014 = parseFloat(document.getElementById('totalContributions2014').value) || 0;
+
+            const years = [earnings2009, earnings2010, earnings2011, earnings2012, earnings2013];
+            const validYears = years.filter(earning => earning > 0);
+            
+            let averageEarnings = 0;
+            if (validYears.length > 0) {
+                averageEarnings = validYears.reduce((sum, earning) => sum + earning, 0) / validYears.length;
+            }
+
+            const sixtyPercent = averageEarnings * 0.60;
+            const finalEfapax = totalContributions2014 + sixtyPercent;
+
+            document.getElementById('averageEarnings').value = averageEarnings.toFixed(2);
+            document.getElementById('sixtyPercent').value = sixtyPercent.toFixed(2);
+            document.getElementById('finalEfapax').value = finalEfapax.toFixed(2);
+
+            document.getElementById('averageResult').textContent = averageEarnings.toFixed(2) + '€';
+            document.getElementById('sixtyPercentResult').textContent = sixtyPercent.toFixed(2) + '€';
+            document.getElementById('contributionsResult').textContent = totalContributions2014.toFixed(2) + '€';
+            document.getElementById('finalEfapaxResult').textContent = finalEfapax.toFixed(2) + '€';
+        }
+
+        // =============================================
+        // ΗΜΕΡΟΛΟΓΙΟ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function initializeShiftTypes() {
+            if (shiftTypes.length === 0) {
+                shiftTypes = [
+                    { id: 1, name: 'Κανονική Βάρδια', color: '#4CAF50', hours: 8, showRate: true },
+                    { id: 2, name: 'Υπερωρία', color: '#FF9800', hours: 2, showRate: true },
+                    { id: 3, name: 'Αναπληρωτής', color: '#2196F3', hours: 8, showRate: true },
+                    { id: 4, name: 'Επιπλέον Βάρδια', color: '#9C27B0', hours: 4, showRate: false },
+                    { id: 5, name: 'Άδεια', color: '#F44336', hours: 0, showRate: false }
+                ];
+                localStorage.setItem('shiftTypes', JSON.stringify(shiftTypes));
+            }
+            renderShiftTypes();
+            updateShiftTypeSelect();
+        }
+
+        function renderShiftTypes() {
+            const container = document.getElementById('shift-types-container');
+            container.innerHTML = '';
+            
+            shiftTypes.forEach(type => {
+                const typeElement = document.createElement('div');
+                typeElement.className = 'shift-type-item';
+                typeElement.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="shift-type-color" style="background-color: ${type.color}"></div>
+                        <div class="shift-type-info">
+                            <strong>${type.name}</strong>
+                            <div>${type.hours} ώρες</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label>
+                            <input type="checkbox" class="shift-type-checkbox" ${type.showRate ? 'checked' : ''} 
+                                   onchange="toggleShiftTypeRate(${type.id})">
+                            Εμφάνιση Αντίτιμου
+                        </label>
+                        <button onclick="removeShiftType(${type.id})" style="background-color: #dc3545; padding: 0.25rem 0.5rem;">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(typeElement);
+            });
+        }
+
+        function updateShiftTypeSelect() {
+            const select = document.getElementById('shift-type');
+            select.innerHTML = '';
+            
+            shiftTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type.id;
+                option.textContent = type.name;
+                select.appendChild(option);
+            });
+            
+            // Προσθήκη custom option
+            const customOption = document.createElement('option');
+            customOption.value = 'custom';
+            customOption.textContent = 'Προσαρμοσμένη Βάρδια';
+            select.appendChild(customOption);
+        }
+
+        function addShiftType() {
+            const name = document.getElementById('new-shift-name').value;
+            const color = document.getElementById('new-shift-color').value;
+            const hours = parseInt(document.getElementById('new-shift-hours').value);
+            
+            if (!name) {
+                alert('Παρακαλώ εισάγετε όνομα βάρδιας');
+                return;
+            }
+            
+            const newType = {
+                id: Date.now(),
+                name: name,
+                color: color,
+                hours: hours,
+                showRate: true
+            };
+            
+            shiftTypes.push(newType);
+            localStorage.setItem('shiftTypes', JSON.stringify(shiftTypes));
+            renderShiftTypes();
+            updateShiftTypeSelect();
+            
+            // Καθαρισμός φόρμας
+            document.getElementById('new-shift-name').value = '';
+        }
+
+        function toggleShiftTypeRate(typeId) {
+            const type = shiftTypes.find(t => t.id === typeId);
+            if (type) {
+                type.showRate = !type.showRate;
+                localStorage.setItem('shiftTypes', JSON.stringify(shiftTypes));
+                updateCalendar();
+                calculateEarnings();
+            }
+        }
+
+        function removeShiftType(typeId) {
+            if (shiftTypes.length <= 1) {
+                alert('Δεν μπορείτε να διαγράψετε τον τελευταίο τύπο βάρδιας');
+                return;
+            }
+            
+            shiftTypes = shiftTypes.filter(t => t.id !== typeId);
+            localStorage.setItem('shiftTypes', JSON.stringify(shiftTypes));
+            renderShiftTypes();
+            updateShiftTypeSelect();
+        }
+
+        function initializeCalendar() {
+            updateCalendar();
+        }
+
+        function updateCalendar() {
+            const calendar = document.getElementById('calendar');
+            const currentMonth = document.getElementById('current-month');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Ενημέρωση τίτλου
+            const monthNames = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος',
+                              'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
+            currentMonth.textContent = `${monthNames[month]} ${year}`;
+            
+            // Καθαρισμός ημερολογίου
+            calendar.innerHTML = '';
+            
+            // Προσθήκη ημερών εβδομάδας
+            const daysOfWeek = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendar.appendChild(dayHeader);
+            });
+            
+            // Πρώτη ημέρα του μήνα
+            const firstDay = new Date(year, month, 1);
+            // Τελευταία ημέρα του μήνα
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // Κενά κελιά πριν την πρώτη ημέρα
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendar.appendChild(emptyDay);
+            }
+            
+            // Ημέρες του μήνα
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.innerHTML = `<div class="day-number">${day}</div>`;
+                
+                const currentDateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const dayShifts = shifts.filter(shift => shift.date === currentDateStr);
+                
+                dayShifts.forEach(shift => {
+                    const shiftType = shiftTypes.find(t => t.id === shift.typeId);
+                    if (shiftType) {
+                        const shiftInfo = document.createElement('div');
+                        shiftInfo.className = 'shift-info';
+                        shiftInfo.style.backgroundColor = shiftType.color;
+                        shiftInfo.style.color = 'white';
+                        shiftInfo.textContent = `${shiftType.name} (${shift.hours}ώ)`;
+                        if (shift.rate > 0 && shiftType.showRate) {
+                            shiftInfo.textContent += ` ${shift.rate}€`;
+                        }
+                        dayElement.appendChild(shiftInfo);
+                    }
+                });
+                
+                dayElement.addEventListener('click', () => editShift(currentDateStr));
+                calendar.appendChild(dayElement);
+            }
+            
+            calculateEarnings();
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        }
+
+        function editShift(date) {
+            document.getElementById('shift-date').value = date;
+            
+            const existingShift = shifts.find(shift => shift.date === date);
+            if (existingShift) {
+                document.getElementById('shift-type').value = existingShift.typeId;
+                document.getElementById('shift-hours').value = existingShift.hours;
+                document.getElementById('shift-rate').value = existingShift.rate;
+                document.getElementById('delete-shift').style.display = 'block';
+                
+                if (existingShift.typeId === 'custom') {
+                    document.getElementById('custom-hours').style.display = 'block';
+                } else {
+                    document.getElementById('custom-hours').style.display = 'none';
+                }
+            } else {
+                document.getElementById('shift-type').value = shiftTypes[0].id;
+                document.getElementById('shift-hours').value = '';
+                document.getElementById('shift-rate').value = '';
+                document.getElementById('delete-shift').style.display = 'none';
+                document.getElementById('custom-hours').style.display = 'none';
+            }
+        }
+
+        function saveShift() {
+            const date = document.getElementById('shift-date').value;
+            const typeValue = document.getElementById('shift-type').value;
+            const hours = parseFloat(document.getElementById('shift-hours').value) || 0;
+            const rate = parseFloat(document.getElementById('shift-rate').value) || 0;
+            
+            if (!date) {
+                alert('Παρακαλώ επιλέξτε ημερομηνία');
+                return;
+            }
+            
+            let typeId, shiftHours;
+            
+            if (typeValue === 'custom') {
+                typeId = 'custom';
+                shiftHours = hours;
+            } else {
+                typeId = parseInt(typeValue);
+                const shiftType = shiftTypes.find(t => t.id === typeId);
+                shiftHours = shiftType ? shiftType.hours : hours;
+            }
+            
+            if (shiftHours <= 0) {
+                alert('Παρακαλώ εισάγετε έγκυρο αριθμό ωρών');
+                return;
+            }
+            
+            const existingIndex = shifts.findIndex(shift => shift.date === date);
+            
+            if (existingIndex !== -1) {
+                // Ενημέρωση υπάρχουσας βάρδιας
+                shifts[existingIndex] = { date, typeId, hours: shiftHours, rate };
+            } else {
+                // Προσθήκη νέας βάρδιας
+                shifts.push({ date, typeId, hours: shiftHours, rate });
+            }
+            
+            localStorage.setItem('shifts', JSON.stringify(shifts));
+            updateCalendar();
+            
+            // Καθαρισμός φόρμας
+            document.getElementById('shift-date').value = '';
+            document.getElementById('shift-type').value = shiftTypes[0].id;
+            document.getElementById('shift-hours').value = '';
+            document.getElementById('shift-rate').value = '';
+            document.getElementById('delete-shift').style.display = 'none';
+            document.getElementById('custom-hours').style.display = 'none';
+        }
+
+        function deleteShift() {
+            const date = document.getElementById('shift-date').value;
+            
+            if (!date) return;
+            
+            shifts = shifts.filter(shift => shift.date !== date);
+            localStorage.setItem('shifts', JSON.stringify(shifts));
+            updateCalendar();
+            
+            // Καθαρισμός φόρμας
+            document.getElementById('shift-date').value = '';
+            document.getElementById('delete-shift').style.display = 'none';
+        }
+
+        function calculateEarnings() {
+            const currentMonthShifts = shifts.filter(shift => {
+                const shiftDate = new Date(shift.date);
+                return shiftDate.getMonth() === currentDate.getMonth() && 
+                       shiftDate.getFullYear() === currentDate.getFullYear();
+            });
+            
+            let totalHours = 0;
+            let grossEarnings = 0;
+            
+            currentMonthShifts.forEach(shift => {
+                totalHours += shift.hours;
+                grossEarnings += shift.rate * shift.hours;
+            });
+            
+            // Υπολογισμός κρατήσεων
+            const mtpyDeduction = grossEarnings * 0.02;
+            const eisforaDeduction = grossEarnings * 0.02;
+            const taxDeduction = grossEarnings * 0.20;
+            
+            const totalDeductions = mtpyDeduction + eisforaDeduction + taxDeduction;
+            const netEarnings = grossEarnings - totalDeductions;
+            
+            document.getElementById('total-hours').textContent = totalHours;
+            document.getElementById('gross-earnings').textContent = grossEarnings.toFixed(2) + '€';
+            document.getElementById('mtpy-deduction').textContent = mtpyDeduction.toFixed(2) + '€';
+            document.getElementById('eisfora-deduction').textContent = eisforaDeduction.toFixed(2) + '€';
+            document.getElementById('tax-deduction').textContent = taxDeduction.toFixed(2) + '€';
+            document.getElementById('net-earnings').textContent = netEarnings.toFixed(2) + '€';
+        }
+
+        // =============================================
+        // ΜΙΣΘΟΛΟΓΙΟ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function saveUserValues() {
+            const userValues = {
+                eparth: document.getElementById('epanthValue').value,
+                idsyn: document.getElementById('idsynValue').value,
+                tekn1: document.getElementById('tekn1Value').value,
+                tekn2: document.getElementById('tekn2Value').value,
+                tekn3: document.getElementById('tekn3Value').value,
+                tekn4: document.getElementById('tekn4Value').value,
+                tekn5: document.getElementById('tekn5Value').value,
+                baseSalary: document.getElementById('baseSalary').value
+            };
+            localStorage.setItem('userSalaryValues', JSON.stringify(userValues));
+            updateCurrentValuesDisplay();
+        }
+
+        function loadUserValues() {
+            const savedValues = localStorage.getItem('userSalaryValues');
+            if (savedValues) {
+                const userValues = JSON.parse(savedValues);
+                
+                if (userValues.eparth) document.getElementById('epanthValue').value = userValues.eparth;
+                if (userValues.idsyn) document.getElementById('idsynValue').value = userValues.idsyn;
+                if (userValues.tekn1) document.getElementById('tekn1Value').value = userValues.tekn1;
+                if (userValues.tekn2) document.getElementById('tekn2Value').value = userValues.tekn2;
+                if (userValues.tekn3) document.getElementById('tekn3Value').value = userValues.tekn3;
+                if (userValues.tekn4) document.getElementById('tekn4Value').value = userValues.tekn4;
+                if (userValues.tekn5) document.getElementById('tekn5Value').value = userValues.tekn5;
+                if (userValues.baseSalary) document.getElementById('baseSalary').value = userValues.baseSalary;
+                
+                updateCurrentValuesDisplay();
+            }
+        }
+
+        function updateCurrentValuesDisplay() {
+            document.getElementById('currentEpanth').textContent = document.getElementById('epanthValue').value + '€';
+            document.getElementById('currentIdsyn').textContent = document.getElementById('idsynValue').value + '€';
+            document.getElementById('currentTekn1').textContent = document.getElementById('tekn1Value').value + '€';
+            document.getElementById('currentTekn2').textContent = document.getElementById('tekn2Value').value + '€';
+            document.getElementById('currentTekn3').textContent = document.getElementById('tekn3Value').value + '€';
+            document.getElementById('currentTekn4').textContent = document.getElementById('tekn4Value').value + '€';
+            document.getElementById('currentTekn5').textContent = document.getElementById('tekn5Value').value + '€';
+        }
+
+        function initializeSalaryScale() {
+            const baseSalary = parseFloat(document.getElementById('baseSalary').value);
+            salaryScale = [];
+            
+            // Δημιουργία κλιμακίου
+            for (let i = 1; i <= 14; i++) {
+                if (i === 1) {
+                    salaryScale.push(baseSalary);
+                } else {
+                    salaryScale.push(salaryScale[i-2] + 60);
+                }
+            }
+            
+            updateSalaryScaleDisplay();
+            updateSalaryCalculations();
+        }
+
+        function updateSalaryScale() {
+            saveUserValues();
+            initializeSalaryScale();
+        }
+
+        function updateSalaryScaleDisplay() {
+            const scaleList = document.getElementById('salaryScaleList');
+            scaleList.innerHTML = '';
+            
+            salaryScale.forEach((amount, index) => {
+                const scaleNumber = index + 1;
+                const scaleItem = document.createElement('div');
+                scaleItem.className = `scale-item ${scaleNumber === currentScale ? 'active' : ''}`;
+                scaleItem.innerHTML = `
+                    <span class="scale-number">${scaleNumber}</span>
+                    <span class="scale-amount">${amount.toFixed(2)}€</span>
+                `;
+                scaleItem.onclick = () => selectScale(scaleNumber);
+                scaleList.appendChild(scaleItem);
+            });
+            
+            document.getElementById('selectedScale').textContent = currentScale;
+            document.getElementById('selectedAmount').textContent = salaryScale[currentScale - 1].toFixed(2) + '€';
+        }
+
+        function selectScale(scaleNumber) {
+            currentScale = scaleNumber;
+            updateSalaryScaleDisplay();
+            updateSalaryCalculations();
+        }
+
+        function updateSalaryCalculations() {
+            const currentAmount = salaryScale[currentScale - 1];
+            const hourlyRate = currentAmount / 280;
+            
+            // Υπολογισμοί με βάση τους τύπους
+            document.getElementById('hourlyRate').textContent = hourlyRate.toFixed(2);
+            document.getElementById('overtimeUntil22').textContent = hourlyRate.toFixed(2);
+            document.getElementById('overtime22to6').textContent = (hourlyRate * 1.30).toFixed(2);
+            document.getElementById('sunday6to22').textContent = (hourlyRate * 1.40).toFixed(2);
+            document.getElementById('sunday22to6').textContent = (hourlyRate * 1.45).toFixed(2);
+            document.getElementById('nightWork').textContent = (hourlyRate * 0.60).toFixed(2);
+            document.getElementById('sundayHoliday').textContent = (hourlyRate * 0.75).toFixed(2);
+            document.getElementById('saturday').textContent = (hourlyRate * 1.25).toFixed(2);
+        }
+
+        // =============================================
+        // ΚΡΑΤΗΣΕΙΣ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function calculateDeductions() {
+            const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+            const dangerousBonus = parseFloat(document.getElementById('dangerousBonus').value) || 0;
+            
+            const totalSalary = basicSalary + dangerousBonus;
+            
+            // Υπολογισμός κρατήσεων
+            const tpdy = totalSalary * 0.04;
+            const mtpy = totalSalary * 0.045;
+            const teady = totalSalary * 0.03;
+            const health = totalSalary * 0.0205;
+            const unemployment = totalSalary * 0.02;
+            
+            const totalDeductions = tpdy + mtpy + teady + health + unemployment;
+            const salaryAfterDeductions = totalSalary - totalDeductions;
+            
+            alert(`Αποτελέσματα Υπολογισμού:\n\nΣυνολικός Μισθός: ${totalSalary.toFixed(2)}€\nΣυνολικές Κρατήσεις: ${totalDeductions.toFixed(2)}€\nΜισθός μετά κρατήσεις: ${salaryAfterDeductions.toFixed(2)}€`);
+        }
+
+        // =============================================
+        // ΔΑΝΕΙΟ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function calculateLoan() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value) * 12;
+            
+            if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTerm)) {
+                document.getElementById('loan-result').innerHTML = '<p>Παρακαλώ εισάγετε έγκυρες τιμές.</p>';
+                return;
+            }
+            
+            const x = Math.pow(1 + interestRate, loanTerm);
+            const monthlyPayment = (loanAmount * x * interestRate) / (x - 1);
+            const totalPayment = monthlyPayment * loanTerm;
+            const totalInterest = totalPayment - loanAmount;
+            const interestRatio = (totalInterest / loanAmount) * 100;
+            
+            document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2) + '€';
+            document.getElementById('totalPayment').textContent = totalPayment.toFixed(2) + '€';
+            document.getElementById('totalInterest').textContent = totalInterest.toFixed(2) + '€';
+            document.getElementById('interestRatio').textContent = interestRatio.toFixed(2) + '%';
+            
+            // Εμφάνιση κουμπιού για πίνακα αποπληρωμής
+            document.getElementById('amortization-btn').style.display = 'block';
+        }
+
+        function generateAmortizationTable() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value) * 12;
+            const monthlyPayment = parseFloat(document.getElementById('monthlyPayment').textContent);
+            
+            const tableBody = document.getElementById('amortization-body');
+            tableBody.innerHTML = '';
+            
+            let balance = loanAmount;
+            
+            for (let month = 1; month <= 12; month++) {
+                const interest = balance * interestRate;
+                const principal = monthlyPayment - interest;
+                balance -= principal;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${month}</td>
+                    <td>${monthlyPayment.toFixed(2)}€</td>
+                    <td>${interest.toFixed(2)}€</td>
+                    <td>${principal.toFixed(2)}€</td>
+                    <td>${balance.toFixed(2)}€</td>
+                `;
+                tableBody.appendChild(row);
+            }
+            
+            document.getElementById('amortization-table-container').style.display = 'block';
+        }
+
+        // =============================================
+        // ΔΙΑΧΕΙΡΙΣΗ ΔΕΔΟΜΕΝΩΝ - ΣΥΝΑΡΤΗΣΕΙΣ
+        // =============================================
+
+        function updateDataStats() {
+            const shifts = JSON.parse(localStorage.getItem('shifts')) || [];
+            const shiftTypes = JSON.parse(localStorage.getItem('shiftTypes')) || [];
+            const salaryData = localStorage.getItem('userSalaryValues');
+            const pensionData = localStorage.getItem('pensionableEarnings');
+            
+            document.getElementById('shifts-count').textContent = shifts.length;
+            document.getElementById('shift-types-count').textContent = shiftTypes.length;
+            document.getElementById('salary-data-count').textContent = (salaryData || pensionData) ? 'ΝΑΙ' : 'ΟΧΙ';
+            
+            // Υπολογισμός συνολικού μεγέθους δεδομένων
+            let totalSize = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    totalSize += localStorage[key].length;
+                }
+            }
+            document.getElementById('total-data-size').textContent = (totalSize / 1024).toFixed(2) + ' KB';
+        }
+
+        function exportCalendarData() {
+            const shifts = JSON.parse(localStorage.getItem('shifts')) || [];
+            const shiftTypes = JSON.parse(localStorage.getItem('shiftTypes')) || [];
+            
+            const calendarData = {
+                version: '1.0',
+                type: 'calendar',
+                exportDate: new Date().toISOString(),
+                data: {
+                    shifts: shifts,
+                    shiftTypes: shiftTypes
+                }
+            };
+            
+            const dataStr = JSON.stringify(calendarData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `froura-calendar-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            alert('✅ Τα δεδομένα ημερολογίου εξήχθησαν επιτυχώς!');
+        }
+
+        function exportAllData() {
+            const allData = {
+                version: '1.1', // Αύξηση version λόγω νέων δεδομένων
+                type: 'all',
+                exportDate: new Date().toISOString(),
+                data: {
+                    shifts: JSON.parse(localStorage.getItem('shifts')) || [],
+                    shiftTypes: JSON.parse(localStorage.getItem('shiftTypes')) || [],
+                    salaryValues: JSON.parse(localStorage.getItem('userSalaryValues')) || {},
+                    pensionableEarnings: JSON.parse(localStorage.getItem('pensionableEarnings')) || {},
+                    pensionableDM: JSON.parse(localStorage.getItem('pensionableDM')) || {},
+                    dtkData: JSON.parse(localStorage.getItem('dtkData')) || {}, // ΝΕΟ: Εξαγωγή ΔΤΚ
+                    theme: localStorage.getItem('theme') || 'light'
+                }
+            };
+            
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `froura-all-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            alert('✅ Όλα τα δεδομένα εξήχθησαν επιτυχώς!');
+        }
+
+        function importCalendarData(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (importedData.type !== 'calendar') {
+                        alert('❌ Το αρχείο δεν περιέχει δεδομένα ημερολογίου!');
+                        return;
+                    }
+                    
+                    if (!confirm('⚠️ Θα αντικατασταθούν όλα τα τρέχοντα δεδομένα ημερολογίου. Σίγουρα;')) {
+                        return;
+                    }
+                    
+                    localStorage.setItem('shifts', JSON.stringify(importedData.data.shifts || []));
+                    localStorage.setItem('shiftTypes', JSON.stringify(importedData.data.shiftTypes || []));
+                    
+                    shifts = importedData.data.shifts || [];
+                    shiftTypes = importedData.data.shiftTypes || [];
+                    
+                    updateCalendar();
+                    renderShiftTypes();
+                    updateShiftTypeSelect();
+                    updateDataStats();
+                    
+                    alert('✅ Τα δεδομένα ημερολογίου εισήχθησαν επιτυχώς!');
+                    
+                } catch (error) {
+                    alert('❌ Σφάλμα κατά την εισαγωγή: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function importAllData(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (importedData.type !== 'all') {
+                        alert('❌ Το αρχείο δεν περιέχει πλήρη δεδομένα!');
+                        return;
+                    }
+                    
+                    if (!confirm('⚠️ Θα αντικατασταθούν ΟΛΑ τα τρέχοντα δεδομένα. Σίγουρα;')) {
+                        return;
+                    }
+                    
+                    localStorage.setItem('shifts', JSON.stringify(importedData.data.shifts || []));
+                    localStorage.setItem('shiftTypes', JSON.stringify(importedData.data.shiftTypes || []));
+                    localStorage.setItem('userSalaryValues', JSON.stringify(importedData.data.salaryValues || {}));
+                    localStorage.setItem('pensionableEarnings', JSON.stringify(importedData.data.pensionableEarnings || {}));
+                    localStorage.setItem('pensionableDM', JSON.stringify(importedData.data.pensionableDM || {}));
+                    localStorage.setItem('dtkData', JSON.stringify(importedData.data.dtkData || {})); // ΝΕΟ: Εισαγωγή ΔΤΚ
+                    localStorage.setItem('theme', importedData.data.theme || 'light');
+                    
+                    shifts = importedData.data.shifts || [];
+                    shiftTypes = importedData.data.shiftTypes || [];
+                    dtkData = importedData.data.dtkData || dtkData; // ΝΕΟ: Ενημέρωση ΔΤΚ
+                    
+                    updateCalendar();
+                    renderShiftTypes();
+                    updateShiftTypeSelect();
+                    loadUserValues();
+                    initializeDtkManagement(); // ΝΕΟ: Ενημέρωση διαχείρισης ΔΤΚ
+                    updateDataStats();
+                    
+                    // Εφαρμογή θέματος
+                    if (localStorage.getItem('theme') === 'dark') {
+                        document.body.classList.add('dark-theme');
+                        document.getElementById('themeToggle').textContent = '☀️';
+                    } else {
+                        document.body.classList.remove('dark-theme');
+                        document.getElementById('themeToggle').textContent = '🌙';
+                    }
+                    
+                    alert('✅ Όλα τα δεδομένα εισήχθησαν επιτυχώς!');
+                    
+                } catch (error) {
+                    alert('❌ Σφάλμα κατά την εισαγωγή: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
